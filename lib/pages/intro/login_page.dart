@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:simaskuli/pages/fetch_demo_page.dart';
+import 'package:simaskuli/pages/intro/fetch_demo_page.dart';
 import 'package:simaskuli/pages/home_page.dart';
-import 'package:simaskuli/pages/register_page.dart';
+import 'package:simaskuli/pages/intro/register_page.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});

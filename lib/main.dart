@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:simaskuli/pages/login_page.dart';
+import 'package:simaskuli/pages/intro/login_page.dart';
 
 void main() {
   runApp(const MainApp());
