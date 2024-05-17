@@ -15,10 +15,10 @@ class MainApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueAccent),
         useMaterial3: true,
-        scaffoldBackgroundColor: Color.fromARGB(255, 240, 248, 255),
+        // scaffoldBackgroundColor: Color.fromARGB(255, 240, 248, 255),
       ),
       debugShowCheckedModeBanner: false,
-      home: LoginPage(),
+      home: const LoginPage(),
     );
   }
 }

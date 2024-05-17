@@ -79,7 +79,11 @@ class DashboardPage extends StatelessWidget {
                       ),
                     ],
                   ),
-                  CircleAvatar(),
+                  CircleAvatar(
+                    radius: 28,
+                    backgroundImage: NetworkImage(
+                        "https://cdn.picrew.me/shareImg/org/202404/1904634_70voI7cp.png"),
+                  ),
                 ],
               ),
             ),
