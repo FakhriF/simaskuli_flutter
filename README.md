@@ -1,3 +1,3 @@
-# simaskuli
+# Simaskuli
 
-A new Flutter project.
+A Flutter app for Simaskuli App
