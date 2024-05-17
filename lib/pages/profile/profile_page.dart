@@ -1,5 +1,9 @@
-import 'package:flutter/material.dart';
+// ignore_for_file: unnecessary_const
 
+import 'package:flutter/material.dart';
+import 'package:simaskuli/pages/intro/login_page.dart';
+import 'package:simaskuli/pages/profile/edit_profile_page.dart';
+import 'package:simaskuli/pages/profile/settings/setting_page.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -20,13 +24,19 @@ class ProfilePage extends StatelessWidget {
                   children: [
                     SizedBox(height: 24),
                     CircleAvatar(
-                      radius: 80,
+                      radius: 100,
+                      backgroundImage: NetworkImage(
+                          "https://cdn.picrew.me/shareImg/org/202404/1904634_70voI7cp.png"),
                     ),
                     SizedBox(height: 24),
                     Text(
                       "User Name",
                       style:
                           TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      "Role",
+                      style: TextStyle(color: Colors.grey),
                     ),
                     SizedBox(height: 24),
                   ],
@@ -38,26 +48,38 @@ class ProfilePage extends StatelessWidget {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: const Column(
+                child: Column(
                   children: [
+                    // ListTile(
+                    //   leading: Icon(Icons.camera_rounded),
+                    //   title: Text("Change Profile Picture"),
+                    // ),
                     ListTile(
-                      leading: Icon(Icons.camera_rounded),
-                      title: Text("Change Profile Picture"),
+                      leading: const Icon(Icons.edit_rounded),
+                      title: const Text("Edit Profile"),
+                      onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const EditProfilePage())),
                     ),
                     ListTile(
-                      leading: Icon(Icons.edit_rounded),
-                      title: Text("Edit Profile"),
+                      leading: const Icon(Icons.settings_rounded),
+                      title: const Text("Settings"),
+                      onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const SettingsPage())),
                     ),
                     ListTile(
-                      leading: Icon(Icons.settings_rounded),
-                      title: Text("Settings"),
-                    ),
-                    ListTile(
-                      leading: Icon(Icons.logout_rounded, color: Colors.red),
-                      title: Text(
+                      leading: const Icon(Icons.logout_rounded, color: Colors.red),
+                      title: const Text(
                         "Log Out",
-                        style: TextStyle(color: Colors.red),
+                        style: const TextStyle(color: Colors.red),
                       ),
+                      onTap: () => Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const LoginPage())),
                     )
                   ],
                 ),

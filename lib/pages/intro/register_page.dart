@@ -1,6 +1,5 @@
-import "package:flutter/cupertino.dart";
 import "package:flutter/material.dart";
-import "package:flutter/widgets.dart";
+import "package:simaskuli/pages/home_page.dart";
 
 class RegisterPage extends StatelessWidget {
   const RegisterPage({super.key});
@@ -43,66 +42,72 @@ class RegisterPage extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 16.0),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  GestureDetector(
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const RegisterForm(
-                          role: "Student",
+              Center(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    GestureDetector(
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const RegisterForm(
+                            role: "Student",
+                          ),
+                        ),
+                      ),
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.blueAccent),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Image.asset("assets/images/Students_Rafiki.png",
+                                height: 200),
+                            const Text(
+                              "Student",
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            )
+                          ],
                         ),
                       ),
                     ),
-                    child: Container(
-                      padding: const EdgeInsets.all(50),
-                      decoration: BoxDecoration(
-                        color: Colors.blue[100],
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: const Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.person,
+                    const SizedBox(height: 30),
+                    GestureDetector(
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const RegisterForm(
+                            role: "Teacher",
                           ),
-                          Text("Student")
-                        ],
+                        ),
                       ),
-                    ),
-                  ),
-                  const SizedBox(width: 30),
-                  GestureDetector(
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const RegisterForm(
-                          role: "Teacher",
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.blueAccent),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Image.asset("assets/images/Professor_Rafiki.png",
+                                height: 200),
+                            const Text(
+                              "Teacher",
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            )
+                          ],
                         ),
                       ),
                     ),
-                    child: Container(
-                      padding: const EdgeInsets.all(50),
-                      decoration: BoxDecoration(
-                        color: Colors.blue[100],
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: const Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.person,
-                          ),
-                          Text("Teacher")
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               const SizedBox(height: 16.0),
               Center(
@@ -192,7 +197,7 @@ class _RegisterFormState extends State<RegisterForm> {
                     TextField(
                       decoration: InputDecoration(
                         labelText: 'Name',
-                        prefixIcon: Icon(Icons.person_outline),
+                        prefixIcon: const Icon(Icons.person_outline),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10.0),
                         ),
@@ -210,9 +215,9 @@ class _RegisterFormState extends State<RegisterForm> {
                           onPressed: () async {
                             final datePick = await showDatePicker(
                                 context: context,
-                                initialDate: new DateTime.now(),
-                                firstDate: new DateTime(1900),
-                                lastDate: new DateTime(2100));
+                                initialDate: DateTime.now(),
+                                firstDate: DateTime(1900),
+                                lastDate: DateTime(2100));
                             if (datePick != null) {
                               print(datePick);
                               birthController.text = datePick.toString();
@@ -228,7 +233,7 @@ class _RegisterFormState extends State<RegisterForm> {
                     TextField(
                       decoration: InputDecoration(
                         labelText: 'Email',
-                        prefixIcon: Icon(Icons.email_outlined),
+                        prefixIcon: const Icon(Icons.email_outlined),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10.0),
                         ),
@@ -239,7 +244,7 @@ class _RegisterFormState extends State<RegisterForm> {
                       obscureText: true,
                       decoration: InputDecoration(
                         labelText: 'Password',
-                        prefixIcon: Icon(Icons.lock_outline_rounded),
+                        prefixIcon: const Icon(Icons.lock_outline_rounded),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10.0),
                         ),
@@ -250,7 +255,7 @@ class _RegisterFormState extends State<RegisterForm> {
                       obscureText: true,
                       decoration: InputDecoration(
                         labelText: 'Re-Enter Password',
-                        prefixIcon: Icon(Icons.lock_outline_rounded),
+                        prefixIcon: const Icon(Icons.lock_outline_rounded),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10.0),
                         ),
@@ -261,7 +266,12 @@ class _RegisterFormState extends State<RegisterForm> {
                       style: ElevatedButton.styleFrom(
                         minimumSize: const Size.fromHeight(50),
                       ),
-                      onPressed: () {},
+                      onPressed: () => Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const HomePage(),
+                        ),
+                      ),
                       child: const Text('Register'),
                     ),
                   ],

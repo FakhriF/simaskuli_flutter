@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:simaskuli/pages/intro/fetch_demo_page.dart';
 import 'package:simaskuli/pages/home_page.dart';
 import 'package:simaskuli/pages/intro/register_page.dart';
 
@@ -73,7 +71,7 @@ class LoginPage extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       minimumSize: const Size.fromHeight(50),
                     ),
-                    onPressed: () => Navigator.push(
+                    onPressed: () => Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
                         builder: (context) => const HomePage(),
