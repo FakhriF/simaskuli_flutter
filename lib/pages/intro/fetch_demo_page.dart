@@ -7,12 +7,15 @@ import 'package:simaskuli/models/user.dart';
 
 Future<List<User>> getUser() async {
   //TODO: Replace the endpoint API (https://simaskuli-api.vercel.app/api/api/XXXXXXXX)
-  final res = await http
-      .get(Uri.parse('https://simaskuli-api.vercel.app/api/api/users'));
+  const endpoint = 'https://simaskuli-api.vercel.app/api/api/users';
+
+  final res = await http.get(Uri.parse(endpoint));
   if (res.statusCode == 200) {
-    var data = jsonDecode(res.body);
-    var parsed = data.cast<Map<String, dynamic>>();
-    return parsed.map<User>((json) => User.fromJson(json)).toList();
+    var data = jsonDecode(res.body); //Response body dari API
+    var parsed = data.cast<Map<String, dynamic>>(); //Parsing data JSON
+    return parsed
+        .map<User>((json) => User.fromJson(json))
+        .toList(); //Mengembalikan data dengan parse dari JSON ke List Model
   } else {
     throw Exception('Failed');
   }
