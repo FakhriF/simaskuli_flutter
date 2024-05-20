@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class ForumPage extends StatelessWidget {
   const ForumPage({super.key});
@@ -23,8 +25,9 @@ class ForumPage extends StatelessWidget {
               ),
 
             ),
-            Expanded(
+            Container(
               child: ListView.builder(
+                shrinkWrap: true,
                 itemCount: name.length,
                 itemBuilder: (context, index) {
                   return Container(
@@ -76,8 +79,18 @@ class ForumPage extends StatelessWidget {
                     ),
                   );
                 },
+              ), 
+
+            ),
+            Center(
+              child: ElevatedButton(
+                onPressed: () {
+                  debugPrint("Create New Thread button pressed!");
+                },
+                child: Text("Create New Thread"),
               ),
-            )
+            ),
+
           ],
         ),
       ),
