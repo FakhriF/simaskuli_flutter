@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:simaskuli/pages/forum/forum_page.dart';
 import 'package:simaskuli/pages/profile/profile_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -15,8 +16,7 @@ class _HomePageState extends State<HomePage> {
     const DashboardPage(),
     const Center(
         child: Text("Course Page")), //TODO: Change this to the Course Page
-    const Center(
-        child: Text("Forum Page")), //TODO: Change this to the Forum Page
+    const ForumPage(), //TODO: Change this to the Forum Page
     const ProfilePage(),
   ];
 
