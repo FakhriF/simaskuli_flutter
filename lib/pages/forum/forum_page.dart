@@ -32,7 +32,7 @@ class ForumPage extends StatelessWidget {
                 itemBuilder: (context, index) {
                   return Container(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Card(
+                    child: Card.outlined(
                       clipBehavior: Clip.antiAlias,
                       child: ListTile(
                         contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
