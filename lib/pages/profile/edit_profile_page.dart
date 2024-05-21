@@ -1,7 +1,25 @@
 import "package:flutter/material.dart";
+import "package:simaskuli/models/user.dart";
 
-class EditProfilePage extends StatelessWidget {
-  const EditProfilePage({super.key});
+class EditProfilePage extends StatefulWidget {
+  EditProfilePage({required this.userData, super.key});
+
+  final User userData;
+
+  @override
+  State<EditProfilePage> createState() => _EditProfilePageState();
+}
+
+class _EditProfilePageState extends State<EditProfilePage> {
+  TextEditingController nameController = TextEditingController();
+  TextEditingController profileUrlController = TextEditingController();
+
+  @override
+  void initState() {
+    nameController.text = widget.userData.name;
+    profileUrlController.text = widget.userData.profileUrl;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +55,7 @@ class EditProfilePage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 TextField(
+                  controller: nameController,
                   decoration: InputDecoration(
                     labelText: 'User Name',
                     prefixIcon:
@@ -48,6 +67,7 @@ class EditProfilePage extends StatelessWidget {
                 ),
                 const SizedBox(height: 16.0),
                 TextField(
+                  controller: profileUrlController,
                   decoration: InputDecoration(
                     labelText: 'Profile Picture Link',
                     prefixIcon:
@@ -89,8 +109,22 @@ class EditProfilePage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     ElevatedButton(
+                      onPressed: () {
+                        nameController.text = widget.userData.name;
+                        profileUrlController.text = widget.userData.profileUrl;
+                      },
+                      child: const Text('Reset'),
+                    ),
+                    const SizedBox(width: 16.0),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue.shade400,
+                      ),
                       onPressed: () {},
-                      child: const Text('Save'),
+                      child: const Text(
+                        'Save',
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
                   ],
                 ),
