@@ -1,9 +1,65 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:simaskuli/controller/user_auth_controller.dart';
 import 'package:simaskuli/pages/home_page.dart';
 import 'package:simaskuli/pages/intro/register_page.dart';
 
-class LoginPage extends StatelessWidget {
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
+  bool _isDisabled = false;
+
+  String errorMessage = '';
+
+  Future<void> _completeLogin(String email, String password) async {
+    const endpoint = 'https://simaskuli-api.vercel.app/api/api/login';
+
+    final res = await http.post(
+      Uri.parse(endpoint),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(<String, dynamic>{"email": email, "password": password}),
+    );
+
+    if (res.statusCode == 200) {
+      final responseData = json.decode(res.body);
+
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('access_token', responseData['access_token']);
+
+      await loadUserData();
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const HomePage(),
+        ),
+      );
+    } else if (res.statusCode == 401) {
+      setState(() {
+        final responseData = json.decode(res.body);
+        errorMessage = responseData['message'];
+        _isDisabled = false;
+      });
+    } else {
+      setState(() {
+        errorMessage = 'Something went wrong';
+        _isDisabled = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,6 +103,7 @@ class LoginPage extends StatelessWidget {
               Column(
                 children: [
                   TextField(
+                    controller: emailController,
                     decoration: InputDecoration(
                       labelText: 'Email',
                       prefixIcon: const Icon(Icons.mail, color: Colors.grey),
@@ -54,9 +111,13 @@ class LoginPage extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10.0),
                       ),
                     ),
+                    onChanged: (value) => setState(() {
+                      errorMessage = '';
+                    }),
                   ),
                   const SizedBox(height: 16.0),
                   TextField(
+                    controller: passwordController,
                     obscureText: true,
                     decoration: InputDecoration(
                       labelText: 'Password',
@@ -65,18 +126,33 @@ class LoginPage extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10.0),
                       ),
                     ),
+                    onChanged: (value) => setState(() {
+                      errorMessage = '';
+                    }),
+                  ),
+                  errorMessage == ''
+                      ? Container()
+                      : const SizedBox(height: 16.0),
+                  Text(
+                    errorMessage,
+                    style: const TextStyle(color: Colors.red),
                   ),
                   const SizedBox(height: 32.0),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       minimumSize: const Size.fromHeight(50),
                     ),
-                    onPressed: () => Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const HomePage(),
-                      ),
-                    ),
+                    onPressed: _isDisabled
+                        ? null
+                        : () {
+                            setState(() {
+                              _isDisabled = true;
+                            });
+                            _completeLogin(
+                              emailController.text,
+                              passwordController.text,
+                            );
+                          },
                     child: const Text('Login'),
                   ),
                 ],
