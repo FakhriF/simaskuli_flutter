@@ -1,4 +1,6 @@
 import "package:flutter/material.dart";
+import "package:intl/intl.dart";
+import "package:simaskuli/controller/user_auth_controller.dart";
 import "package:simaskuli/pages/home_page.dart";
 
 class RegisterPage extends StatelessWidget {
@@ -151,6 +153,7 @@ class _RegisterFormState extends State<RegisterForm> {
   var birthController = TextEditingController();
   var emailController = TextEditingController();
   var passwordController = TextEditingController();
+  var confirmPasswordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -195,6 +198,7 @@ class _RegisterFormState extends State<RegisterForm> {
                 Column(
                   children: [
                     TextField(
+                      controller: nameController,
                       decoration: InputDecoration(
                         labelText: 'Name',
                         prefixIcon: const Icon(Icons.person_outline),
@@ -217,10 +221,11 @@ class _RegisterFormState extends State<RegisterForm> {
                                 context: context,
                                 initialDate: DateTime.now(),
                                 firstDate: DateTime(1900),
-                                lastDate: DateTime(2100));
+                                lastDate: DateTime(2025));
                             if (datePick != null) {
-                              print(datePick);
-                              birthController.text = datePick.toString();
+                              final formatter =
+                                  DateFormat('yyyy-MM-dd').format(datePick);
+                              birthController.text = formatter.toString();
                             }
                           },
                         ),
@@ -231,6 +236,7 @@ class _RegisterFormState extends State<RegisterForm> {
                     ),
                     const SizedBox(height: 16.0),
                     TextField(
+                      controller: emailController,
                       decoration: InputDecoration(
                         labelText: 'Email',
                         prefixIcon: const Icon(Icons.email_outlined),
@@ -241,6 +247,7 @@ class _RegisterFormState extends State<RegisterForm> {
                     ),
                     const SizedBox(height: 16.0),
                     TextField(
+                      controller: passwordController,
                       obscureText: true,
                       decoration: InputDecoration(
                         labelText: 'Password',
@@ -252,6 +259,7 @@ class _RegisterFormState extends State<RegisterForm> {
                     ),
                     const SizedBox(height: 16.0),
                     TextField(
+                      controller: confirmPasswordController,
                       obscureText: true,
                       decoration: InputDecoration(
                         labelText: 'Re-Enter Password',
@@ -266,12 +274,38 @@ class _RegisterFormState extends State<RegisterForm> {
                       style: ElevatedButton.styleFrom(
                         minimumSize: const Size.fromHeight(50),
                       ),
-                      onPressed: () => Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const HomePage(),
-                        ),
-                      ),
+                      onPressed: () {
+                        if (nameController.text.isEmpty ||
+                            birthController.text.isEmpty ||
+                            emailController.text.isEmpty ||
+                            passwordController.text.isEmpty ||
+                            confirmPasswordController.text.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Please fill all fields'),
+                            ),
+                          );
+                          return;
+                        } else {
+                          if (passwordController.text !=
+                              confirmPasswordController.text) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Password does not match'),
+                              ),
+                            );
+                            return;
+                          } else {
+                            registerUser(
+                                nameController.text,
+                                emailController.text,
+                                passwordController.text,
+                                widget.role,
+                                birthController.text,
+                                context);
+                          }
+                        }
+                      },
                       child: const Text('Register'),
                     ),
                   ],

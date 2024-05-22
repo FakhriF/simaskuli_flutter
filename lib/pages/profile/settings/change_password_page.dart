@@ -1,8 +1,50 @@
 import 'package:flutter/material.dart';
-
+import 'package:simaskuli/controller/user_auth_controller.dart';
 
 class ChangePasswordPage extends StatelessWidget {
-  const ChangePasswordPage({super.key});
+  ChangePasswordPage({super.key});
+
+  TextEditingController oldPasswordController = TextEditingController();
+  TextEditingController newPasswordController = TextEditingController();
+
+  Future<void> changePassword(BuildContext context) async {
+    if (oldPasswordController.text.isEmpty ||
+        newPasswordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        content: const Text('Please Fill All Fields'),
+      ));
+    } else {
+      if (oldPasswordController.text == newPasswordController.text) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          content: const Text('New Password cannot be same as old password'),
+        ));
+        return;
+      } else if (newPasswordController.text.length < 8) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          content: const Text('Password must be at least 8 characters'),
+        ));
+        return;
+      }
+
+      final success = await changePasswordController(
+          oldPasswordController.text, newPasswordController.text, context);
+      if (success) {
+        Navigator.pop(context);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +80,7 @@ class ChangePasswordPage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 TextField(
+                  controller: oldPasswordController,
                   decoration: InputDecoration(
                     labelText: 'Your Old Password',
                     prefixIcon:
@@ -49,6 +92,7 @@ class ChangePasswordPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 16.0),
                 TextField(
+                  controller: newPasswordController,
                   decoration: InputDecoration(
                     labelText: 'Your New Password',
                     prefixIcon:
@@ -63,7 +107,9 @@ class ChangePasswordPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        changePassword(context);
+                      },
                       child: const Text('Change Password'),
                     ),
                   ],

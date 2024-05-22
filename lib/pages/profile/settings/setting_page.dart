@@ -19,8 +19,7 @@ class SettingsPage extends StatelessWidget {
             title: const Text("Change Password"),
             onTap: () => Navigator.push(
               context,
-              MaterialPageRoute(
-                  builder: (context) => const ChangePasswordPage()),
+              MaterialPageRoute(builder: (context) => ChangePasswordPage()),
             ),
           ),
           ListTile(
