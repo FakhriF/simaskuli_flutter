@@ -67,6 +67,15 @@ Future<void> registerUser(String name, String email, String password,
   Navigator.of(context).pop();
 
   if (res.statusCode == 201) {
+
+    print(res.statusCode);
+    print(res.body);
+
+    final responseData = json.decode(res.body);
+
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('access_token', responseData['access_token']);
+  
     await loadUserData();
 
     Navigator.pushReplacement(
@@ -149,7 +158,7 @@ Future<bool> changePasswordController(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
       ),
-      content: Text("Password changed successfully"),
+      content: const Text("Password changed successfully"),
     ));
     return true;
   } else if (res.statusCode == 401) {
