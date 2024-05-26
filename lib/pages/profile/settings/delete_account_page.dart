@@ -144,7 +144,7 @@ class DeleteAccountFormPage extends StatelessWidget {
                       onPressed: () => Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => LoginPage(),
+                          builder: (context) => const LoginPage(),
                         ),
                       ),
                       child: const Row(
