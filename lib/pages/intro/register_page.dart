@@ -1,7 +1,6 @@
 import "package:flutter/material.dart";
 import "package:intl/intl.dart";
 import "package:simaskuli/controller/user_auth_controller.dart";
-import "package:simaskuli/pages/home_page.dart";
 
 class RegisterPage extends StatelessWidget {
   const RegisterPage({super.key});
@@ -10,128 +9,132 @@ class RegisterPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'SIMASKULI',
-                    style: TextStyle(
-                        fontSize: 32.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blueAccent),
-                  ),
-                  const SizedBox(height: 16.0),
-                  const Text(
-                    'Choose Your\nRole',
-                    style:
-                        TextStyle(fontSize: 28.0, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 16.0),
-                  Container(
-                    height: 5,
-                    width: 70,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.0),
-                      color: Colors.blueAccent,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16.0),
-              Center(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    GestureDetector(
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const RegisterForm(
-                            role: "Student",
-                          ),
-                        ),
-                      ),
-                      child: Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.blueAccent),
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Image.asset("assets/images/Students_Rafiki.png",
-                                height: 200),
-                            const Text(
-                              "Student",
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 30),
-                    GestureDetector(
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const RegisterForm(
-                            role: "Teacher",
-                          ),
-                        ),
-                      ),
-                      child: Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.blueAccent),
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Image.asset("assets/images/Professor_Rafiki.png",
-                                height: 200),
-                            const Text(
-                              "Teacher",
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16.0),
-              Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text("Already have an account?"),
-                    const SizedBox(width: 8.0),
-                    GestureDetector(
-                      onTap: () => Navigator.pop(context),
-                      child: const Text(
-                        'Login',
-                        style: TextStyle(
+                    const Text(
+                      'SIMASKULI',
+                      style: TextStyle(
+                          fontSize: 32.0,
                           fontWeight: FontWeight.bold,
-                          color: Colors.blueAccent,
-                        ),
+                          color: Colors.blueAccent),
+                    ),
+                    const SizedBox(height: 16.0),
+                    const Text(
+                      'Choose Your\nRole',
+                      style:
+                          TextStyle(fontSize: 28.0, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 16.0),
+                    Container(
+                      height: 5,
+                      width: 70,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10.0),
+                        color: Colors.blueAccent,
                       ),
                     ),
                   ],
                 ),
-              )
-            ],
+                const SizedBox(height: 50.0),
+                Center(
+                  child: Wrap(
+                    // spacing: 16.0,
+                    alignment: WrapAlignment.center,
+                    runAlignment: WrapAlignment.center,
+                    runSpacing: 32.0,
+                    children: [
+                      GestureDetector(
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const RegisterForm(
+                              role: "Student",
+                            ),
+                          ),
+                        ),
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.blueAccent),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Image.asset("assets/images/Students_Rafiki.png",
+                                  height: 200),
+                              const Text(
+                                "Student",
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 30),
+                      GestureDetector(
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const RegisterForm(
+                              role: "Teacher",
+                            ),
+                          ),
+                        ),
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.blueAccent),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Image.asset("assets/images/Professor_Rafiki.png",
+                                  height: 200),
+                              const Text(
+                                "Teacher",
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 50.0),
+                Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text("Already have an account?"),
+                      const SizedBox(width: 8.0),
+                      GestureDetector(
+                        onTap: () => Navigator.pop(context),
+                        child: const Text(
+                          'Login',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blueAccent,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
           ),
         ),
       ),
@@ -286,6 +289,13 @@ class _RegisterFormState extends State<RegisterForm> {
                             ),
                           );
                           return;
+                        } else if (passwordController.text.length < 8) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Password must be at least 8 characters'),
+                              ),
+                            );
+                            return;
                         } else {
                           if (passwordController.text !=
                               confirmPasswordController.text) {
