@@ -2,12 +2,16 @@
 
 import 'package:flutter/material.dart';
 import 'package:simaskuli/pages/grades/student_gradebook.dart';
+import 'package:simaskuli/controller/user_auth_controller.dart';
+import 'package:simaskuli/models/user.dart';
 import 'package:simaskuli/pages/intro/login_page.dart';
 import 'package:simaskuli/pages/profile/edit_profile_page.dart';
 import 'package:simaskuli/pages/profile/settings/setting_page.dart';
 
 class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key});
+  const ProfilePage({required this.userData, super.key});
+
+  final User userData;
 
   @override
   Widget build(BuildContext context) {
@@ -19,27 +23,26 @@ class ProfilePage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              const Padding(
-                padding: EdgeInsets.all(24.0),
+              Padding(
+                padding: const EdgeInsets.all(24.0),
                 child: Column(
                   children: [
-                    SizedBox(height: 24),
+                    const SizedBox(height: 24),
                     CircleAvatar(
                       radius: 100,
-                      backgroundImage: NetworkImage(
-                          "https://cdn.picrew.me/shareImg/org/202404/1904634_70voI7cp.png"),
+                      backgroundImage: NetworkImage(userData.profileUrl),
                     ),
-                    SizedBox(height: 24),
+                    const SizedBox(height: 24),
                     Text(
-                      "User Name",
-                      style:
-                          TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                      userData.name,
+                      style: const TextStyle(
+                          fontSize: 24, fontWeight: FontWeight.bold),
                     ),
                     Text(
-                      "Role",
-                      style: TextStyle(color: Colors.grey),
+                      userData.email,
+                      style: const TextStyle(color: Colors.grey),
                     ),
-                    SizedBox(height: 24),
+                    const SizedBox(height: 24),
                   ],
                 ),
               ),
@@ -59,9 +62,13 @@ class ProfilePage extends StatelessWidget {
                       leading: const Icon(Icons.edit_rounded),
                       title: const Text("Edit Profile"),
                       onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const EditProfilePage())),
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => EditProfilePage(
+                            userData: userData,
+                          ),
+                        ),
+                      ),
                     ),
                     ListTile(
                       leading: const Icon(Icons.settings_rounded),
@@ -80,15 +87,56 @@ class ProfilePage extends StatelessWidget {
                               builder: (context) => studentGradeBook())),
                     ),
                     ListTile(
-                      leading: const Icon(Icons.logout_rounded, color: Colors.red),
+                      leading:
+                          const Icon(Icons.logout_rounded, color: Colors.red),
                       title: const Text(
                         "Log Out",
                         style: const TextStyle(color: Colors.red),
                       ),
-                      onTap: () => Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const LoginPage())),
+                      onTap: () async {
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text("Log Out"),
+                            content: const Text(
+                              "Are you sure you want to log out?",
+                            ),
+                            actions: [
+                              TextButton(
+                                child: const Text("Cancel"),
+                                onPressed: () => Navigator.pop(context),
+                              ),
+                              TextButton(
+                                child: const Text("OK"),
+                                onPressed: () async {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) => const AlertDialog(
+                                            content: Row(
+                                              children: [
+                                                CircularProgressIndicator(),
+                                                SizedBox(width: 16),
+                                                Text("Logging Out..."),
+                                              ],
+                                            ),
+                                          ));
+
+                                  final logOut = await logout();
+
+                                  if (logOut) {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => const LoginPage(),
+                                      ),
+                                    );
+                                  }
+                                },
+                              ),
+                            ],
+                          ),
+                        );
+                      },
                     )
                   ],
                 ),
