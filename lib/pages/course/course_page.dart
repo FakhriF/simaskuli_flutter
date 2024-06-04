@@ -1,95 +1,80 @@
 import 'package:flutter/material.dart';
+import 'package:simaskuli/controller/course_controller.dart';
+import 'package:simaskuli/models/course.dart';
+import 'package:simaskuli/pages/course/course_detail_page.dart';
 
-class CoursePage extends StatelessWidget {
-  const CoursePage({super.key});
+class CourseSelectionPage extends StatefulWidget {
+  const CourseSelectionPage({super.key});
 
-  static const List<String> title = ['Lorem', 'Ipsum', 'dolor']; // Temp Data
-  static const List<String> name = ['Albert', 'Bekky', 'Clarisse']; // Temp Data
+  @override
+  _CourseSelectionPageState createState() => _CourseSelectionPageState();
+}
 
+class _CourseSelectionPageState extends State<CourseSelectionPage> {
+  late Future<List<Course>> _coursesFuture;
+  final CourseController _courseController = CourseController();
 
+  @override
+  void initState() {
+    super.initState();
+    _coursesFuture = _courseController.getCourses();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Course List'),
+      ),
       body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(24),
-              child: const Text(
-                "Course",
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-
-            ),
-            Container(
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: name.length,
+        child: FutureBuilder<List<Course>>(
+          future: _coursesFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return const Center(child: Text('No courses found'));
+            } else {
+              final courses = snapshot.data!;
+              return ListView.builder(
+                itemCount: courses.length,
                 itemBuilder: (context, index) {
-                  return Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Card.outlined(
-                      clipBehavior: Clip.antiAlias,
-                      child: ListTile(
-                        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        onTap: () {
-                          debugPrint("You clicked on this thread!");
-                        },
-                        leading: Container(
-                          width: 50,
-                          height: 50,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Colors.blue,
-                              width: 2.0,
-                            ),
+                  final course = courses[index];
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CourseDetailPage(course: course),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                      padding: const EdgeInsets.all(16.0),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey),
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            course.title,
+                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                           ),
-                          child: Icon(
-                            Icons.people,
-                            color: Colors.blue,
-                          ),
-                        ),
-                        title: Text(
-                          '${title[index]}',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        subtitle: Text(
-                          'By ${name[index]}, MMM dd, yyyy',
-                          style: TextStyle(color: Colors.black.withOpacity(0.6)),
-                        ),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              icon: Icon(Icons.thumb_up, color: Colors.blue, size: 20),
-                              onPressed: () {
-                                debugPrint("You liked this Thread!");
-                              },
-                            ),
-                            Text('Likes', style: TextStyle(color: Colors.blue)) , // Example text
-                          ],
-                        ),
-
+                          const SizedBox(height: 8.0),
+                          Text(course.description),
+                        ],
                       ),
                     ),
                   );
                 },
-              ), 
-
-            ),
-            Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  debugPrint("Create New Thread button pressed!");
-                },
-                child: Text("Create New Thread"),
-              ),
-            ),
-
-          ],
+              );
+            }
+          },
         ),
       ),
     );
