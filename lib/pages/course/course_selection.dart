@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class UpcomingQuiz extends StatelessWidget {
-  const UpcomingQuiz({super.key});
+class CourseSelection extends StatelessWidget {
+  const CourseSelection({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -10,11 +10,11 @@ class UpcomingQuiz extends StatelessWidget {
       // padding: EdgeInsets.symmetric(horizontal: 20),
       child: ListView(
         shrinkWrap: false,
-        scrollDirection: Axis.vertical,
+        scrollDirection: Axis.horizontal,
         children: <Widget>[
           Container(
             width: 320,
-            margin: EdgeInsets.symmetric(horizontal: 20),
+            margin: EdgeInsets.only(left: 20),
             padding: EdgeInsets.all(15),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
