@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:simaskuli/pages/forum/forum_page.dart';
+import 'package:simaskuli/pages/grades/student_gradebook.dart';
 import 'package:simaskuli/pages/profile/profile_page.dart';
 
 class HomePage extends StatefulWidget {
