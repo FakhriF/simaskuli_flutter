@@ -62,7 +62,7 @@ class _HomePageState extends State<HomePage> {
     final otherPages = [
       const Center(
           child: Text("Course Page")), //TODO: Ubah ini menjadi halaman kursus
-      const ForumPage(), //TODO: Ubah ini menjadi halaman forum
+      ForumPage(),
       ProfilePage(userData: user),
     ];
     setState(() {
