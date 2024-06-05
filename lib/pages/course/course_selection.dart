@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class UpcomingQuiz extends StatelessWidget {
-  const UpcomingQuiz({super.key});
+class CourseSelection extends StatelessWidget {
+  const CourseSelection({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -10,17 +10,17 @@ class UpcomingQuiz extends StatelessWidget {
       // padding: EdgeInsets.symmetric(horizontal: 20),
       child: ListView(
         shrinkWrap: false,
-        scrollDirection: Axis.vertical,
+        scrollDirection: Axis.horizontal,
         children: <Widget>[
           Container(
             width: 320,
-            margin: EdgeInsets.symmetric(horizontal: 20),
+            margin: EdgeInsets.only(left: 20),
             padding: EdgeInsets.all(15),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               color: Colors.red,
             ),
-            child: const Column(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
@@ -44,13 +44,13 @@ class UpcomingQuiz extends StatelessWidget {
           ),
           Container(
             width: 320,
-            margin: const EdgeInsets.only(left: 20),
-            padding: const EdgeInsets.all(15),
+            margin: EdgeInsets.only(left: 20),
+            padding: EdgeInsets.all(15),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               color: Colors.blue,
             ),
-            child: const Column(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
@@ -74,13 +74,13 @@ class UpcomingQuiz extends StatelessWidget {
           ),
           Container(
             width: 320,
-            margin: const EdgeInsets.only(left: 20),
-            padding: const EdgeInsets.all(15),
+            margin: EdgeInsets.only(left: 20),
+            padding: EdgeInsets.all(15),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               color: Colors.green,
             ),
-            child: const Column(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
@@ -104,13 +104,13 @@ class UpcomingQuiz extends StatelessWidget {
           ),
           Container(
             width: 320,
-            margin: const EdgeInsets.only(left: 20),
-            padding: const EdgeInsets.all(15),
+            margin: EdgeInsets.only(left: 20),
+            padding: EdgeInsets.all(15),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               color: Colors.yellow[700],
             ),
-            child: const Column(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
@@ -134,16 +134,16 @@ class UpcomingQuiz extends StatelessWidget {
           ),
           Container(
             width: 320,
-            margin: const EdgeInsets.only(
+            margin: EdgeInsets.only(
               left: 20,
               right: 20,
             ),
-            padding: const EdgeInsets.all(15),
+            padding: EdgeInsets.all(15),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               color: Colors.orange,
             ),
-            child: const Column(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
