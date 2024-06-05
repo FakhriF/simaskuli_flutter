@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simaskuli/models/forum.dart';
 
 Future<List<Thread>> getThread() async {
@@ -20,26 +21,55 @@ Future<List<Thread>> getThread() async {
   }
 }
 
+Future<void> createThread(String title, String content, int userId) async {
+  const endpoint = 'https://simaskuli-api.vercel.app/api/api/forum';
+
+  final response = await http.post(
+    Uri.parse(endpoint),
+    body: json.encode({
+      'title': title,
+      'content': content,
+      'userId': userId,
+    }),
+    headers: {'Content-Type': 'application/json'},
+  );
+
+  if (response.statusCode == 200) {
+    debugPrint('Post created successfully');
+  } else {
+    throw Exception('Failed to create post: ${response.statusCode}');
+  }
+}
+
 class ForumPage extends StatefulWidget {
-  const ForumPage({super.key});
+  const ForumPage({Key? key}) : super(key: key); //TODO PASS USER PARAMETER FROM PREVIOUS PAGE
 
   @override
   State<ForumPage> createState() => _ForumPageState();
 }
 
 class _ForumPageState extends State<ForumPage> {
+  int? currentUser;
   late Future<List<Thread>> threads;
 
   @override
   void initState() {
     super.initState();
     threads = getThread();
+    loadCurrentUser();
   }
 
   String formatDate(String date) {
     final DateTime parsedDate = DateTime.parse(date);
     final DateFormat formatter = DateFormat('yyyy-MM-dd');
     return formatter.format(parsedDate);
+  }
+
+  Future<void> loadCurrentUser() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      currentUser = prefs.getInt('userId') ?? 0; // Default value if userId is not found
+    });
   }
 
   @override
@@ -82,20 +112,9 @@ class _ForumPageState extends State<ForumPage> {
                               onTap: () {
                                 debugPrint("You clicked on this thread!");
                               },
-                              leading: Container(
-                                width: 50,
-                                height: 50,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: Colors.blue,
-                                    width: 2.0,
-                                  ),
-                                ),
-                                child: const Icon(
-                                  Icons.people,
-                                  color: Colors.blue,
-                                ),
+                              leading: CircleAvatar(
+                                backgroundColor: Colors.blue,
+                                backgroundImage: NetworkImage(thread.user.profileUrl),
                               ),
                               title: Text(
                                 thread.title,
@@ -134,7 +153,7 @@ class _ForumPageState extends State<ForumPage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
+        onPressed: () async {
           debugPrint("CLICKED NEW THREAD");
           final _formKey = GlobalKey<FormState>();
           final _titleController = TextEditingController();
@@ -184,10 +203,22 @@ class _ForumPageState extends State<ForumPage> {
                     child: const Text('Cancel'),
                   ),
                   ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       if (_formKey.currentState!.validate()) {
-                        // TODO Add Push Function
-                        Navigator.of(context).pop();
+                        final String title = _titleController.text;
+                        final String content = _contentController.text;
+                        final int userId = currentUser ?? 0;
+
+                        try {
+                          await createThread(title, content, userId);
+                          Navigator.of(context).pop();
+                          setState(() {
+                            threads = getThread();
+                          });
+                        } catch (e) {
+                          debugPrint('Error creating post: $e');
+                          // Handle error
+                        }
                       }
                     },
                     child: const Text('Create'),
