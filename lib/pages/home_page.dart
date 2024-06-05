@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:simaskuli/controller/user_auth_controller.dart';
 import 'package:simaskuli/models/user.dart';
 
 import 'package:simaskuli/pages/forum/forum_page.dart';
+import 'package:simaskuli/pages/grades/student_gradebook.dart';
 import 'package:simaskuli/pages/profile/profile_page.dart';
+
+import 'package:simaskuli/pages/course/course_page.dart';
+import 'package:simaskuli/pages/course/course_selection.dart';
+
 import 'package:simaskuli/pages/course/upcoming_quiz.dart';
 
 class HomePage extends StatefulWidget {
@@ -60,9 +64,8 @@ class _HomePageState extends State<HomePage> {
     final user = await getUserData();
     final dashboardPage = DashboardPage(userData: user);
     final otherPages = [
-      const Center(
-          child: Text("Course Page")), //TODO: Ubah ini menjadi halaman kursus
-      ForumPage(),
+      const CourseSelectionPage(),//TODO: Ubah ini menjadi halaman kursus
+      const ForumPage(), //TODO: Ubah ini menjadi halaman forum
       ProfilePage(userData: user),
     ];
     setState(() {
@@ -170,6 +173,7 @@ class DashboardPage extends StatelessWidget {
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
             ),
+            CourseSelection(),
             //TODO: Implement Courses in Dashboard Here!
             Container(
               padding: const EdgeInsets.all(24),
@@ -179,7 +183,7 @@ class DashboardPage extends StatelessWidget {
               ),
             ),
             //TODO: Implement Upcoming Quiz in Dashboard Here!
-            UpcomingQuiz()
+            const UpcomingQuiz()
             //TODO: See the reference design here https://dribbble.com/shots/16244904-Education-Online-Course-Mobile-App
           ],
         ),

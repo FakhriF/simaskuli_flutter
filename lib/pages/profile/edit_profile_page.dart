@@ -2,7 +2,7 @@ import "package:flutter/material.dart";
 import "package:simaskuli/models/user.dart";
 
 class EditProfilePage extends StatefulWidget {
-  EditProfilePage({required this.userData, super.key});
+  const EditProfilePage({required this.userData, super.key});
 
   final User userData;
 
