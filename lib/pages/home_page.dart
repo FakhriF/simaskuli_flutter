@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simaskuli/models/user.dart';
 
 import 'package:simaskuli/pages/forum/forum_page.dart';
-
+import 'package:simaskuli/pages/grades/student_gradebook.dart';
 import 'package:simaskuli/pages/profile/profile_page.dart';
 
 import 'package:simaskuli/pages/course/course_page.dart';

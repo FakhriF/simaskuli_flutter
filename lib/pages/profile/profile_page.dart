@@ -1,6 +1,7 @@
 // ignore_for_file: unnecessary_const
 
 import 'package:flutter/material.dart';
+import 'package:simaskuli/pages/grades/student_gradebook.dart';
 import 'package:simaskuli/controller/user_auth_controller.dart';
 import 'package:simaskuli/models/user.dart';
 import 'package:simaskuli/pages/intro/login_page.dart';
@@ -76,6 +77,14 @@ class ProfilePage extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                               builder: (context) => const SettingsPage())),
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.school_rounded),
+                      title: const Text("Gradebook"),
+                      onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => studentGradeBook())),
                     ),
                     ListTile(
                       leading:
