@@ -122,7 +122,7 @@ class _ForumPageState extends State<ForumPage> {
                                     fontWeight: FontWeight.bold),
                               ),
                               subtitle: Text(
-                                'By ${thread.userId}, ${formatDate(thread.createdAt)}',
+                                'By ${thread.user.name}, ${formatDate(thread.createdAt)}',
                                 style: TextStyle(
                                     color: Colors.black.withOpacity(0.6)),
                               ),
