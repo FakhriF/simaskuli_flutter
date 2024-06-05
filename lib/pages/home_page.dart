@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:simaskuli/controller/user_auth_controller.dart';
 import 'package:simaskuli/models/user.dart';
 
 import 'package:simaskuli/pages/forum/forum_page.dart';
@@ -179,7 +178,7 @@ class DashboardPage extends StatelessWidget {
               ),
             ),
             //TODO: Implement Upcoming Quiz in Dashboard Here!
-            UpcomingQuiz()
+            const UpcomingQuiz()
             //TODO: See the reference design here https://dribbble.com/shots/16244904-Education-Online-Course-Mobile-App
           ],
         ),
