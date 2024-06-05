@@ -20,7 +20,7 @@ class UpcomingQuiz extends StatelessWidget {
               borderRadius: BorderRadius.circular(10),
               color: Colors.red,
             ),
-            child: Column(
+            child: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
@@ -44,13 +44,13 @@ class UpcomingQuiz extends StatelessWidget {
           ),
           Container(
             width: 320,
-            margin: EdgeInsets.only(left: 20),
-            padding: EdgeInsets.all(15),
+            margin: const EdgeInsets.only(left: 20),
+            padding: const EdgeInsets.all(15),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               color: Colors.blue,
             ),
-            child: Column(
+            child: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
@@ -74,13 +74,13 @@ class UpcomingQuiz extends StatelessWidget {
           ),
           Container(
             width: 320,
-            margin: EdgeInsets.only(left: 20),
-            padding: EdgeInsets.all(15),
+            margin: const EdgeInsets.only(left: 20),
+            padding: const EdgeInsets.all(15),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               color: Colors.green,
             ),
-            child: Column(
+            child: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
@@ -104,13 +104,13 @@ class UpcomingQuiz extends StatelessWidget {
           ),
           Container(
             width: 320,
-            margin: EdgeInsets.only(left: 20),
-            padding: EdgeInsets.all(15),
+            margin: const EdgeInsets.only(left: 20),
+            padding: const EdgeInsets.all(15),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               color: Colors.yellow[700],
             ),
-            child: Column(
+            child: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
@@ -134,16 +134,16 @@ class UpcomingQuiz extends StatelessWidget {
           ),
           Container(
             width: 320,
-            margin: EdgeInsets.only(
+            margin: const EdgeInsets.only(
               left: 20,
               right: 20,
             ),
-            padding: EdgeInsets.all(15),
+            padding: const EdgeInsets.all(15),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               color: Colors.orange,
             ),
-            child: Column(
+            child: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(

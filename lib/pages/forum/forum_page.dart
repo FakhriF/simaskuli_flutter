@@ -33,7 +33,7 @@ class ForumPage extends StatelessWidget {
                     child: Card.outlined(
                       clipBehavior: Clip.antiAlias,
                       child: ListTile(
-                        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                         onTap: () {
                           debugPrint("You clicked on this thread!");
                         },
@@ -47,14 +47,14 @@ class ForumPage extends StatelessWidget {
                               width: 2.0,
                             ),
                           ),
-                          child: Icon(
+                          child: const Icon(
                             Icons.people,
                             color: Colors.blue,
                           ),
                         ),
                         title: Text(
-                          '${title[index]}',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          title[index],
+                          style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         subtitle: Text(
                           'By ${name[index]}, MMM dd, yyyy',
@@ -64,12 +64,12 @@ class ForumPage extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             IconButton(
-                              icon: Icon(Icons.thumb_up, color: Colors.blue, size: 20),
+                              icon: const Icon(Icons.thumb_up, color: Colors.blue, size: 20),
                               onPressed: () {
                                 debugPrint("You liked this Thread!");
                               },
                             ),
-                            Text('Likes', style: TextStyle(color: Colors.blue)) , // Example text
+                            const Text('Likes', style: TextStyle(color: Colors.blue)) , // Example text
                           ],
                         ),
 
@@ -85,7 +85,7 @@ class ForumPage extends StatelessWidget {
                 onPressed: () {
                   debugPrint("Create New Thread button pressed!");
                 },
-                child: Text("Create New Thread"),
+                child: const Text("Create New Thread"),
               ),
             ),
 
