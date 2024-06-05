@@ -1,12 +1,47 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
+import 'dart:convert';
 
-class ForumPage extends StatelessWidget {
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
+import 'package:simaskuli/models/forum.dart';
+
+
+Future<List<Thread>> getThread() async {
+  const endpoint = 'https://simaskuli-api.vercel.app/api/api/forum';
+
+  final response = await http.get(Uri.parse(endpoint));
+  if (response.statusCode == 200) {
+    List<Thread> threads= (json.decode(response.body)["data"] as List)
+        .map((data) => Thread.fromJson(data))
+        .toList();
+    return threads;
+  } else {
+    throw Exception('Failed');
+  }
+}
+
+class ForumPage extends StatefulWidget {
   const ForumPage({super.key});
 
-  static const List<String> title = ['Lorem', 'Ipsum', 'dolor']; // Temp Data
-  static const List<String> name = ['Albert', 'Bekky', 'Clarisse']; // Temp Data
+  @override
+  State<ForumPage> createState() => _ForumPageState();
+}
 
+class _ForumPageState extends State<ForumPage> {
+  late Future<List<Thread>> threads;
 
+  @override
+  void initState() {
+    super.initState();
+    threads = getThread();
+  }
+
+  String formatDate(String date) {
+    final DateTime parsedDate = DateTime.parse(date);
+    final DateFormat formatter = DateFormat('yyyy-MM-dd');
+    return formatter.format(parsedDate);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,66 +54,82 @@ class ForumPage extends StatelessWidget {
               padding: const EdgeInsets.all(24),
               child: const Text(
                 "Forum",
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
-
             ),
-            Container(
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: name.length,
-                itemBuilder: (context, index) {
-                  return Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Card.outlined(
-                      clipBehavior: Clip.antiAlias,
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        onTap: () {
-                          debugPrint("You clicked on this thread!");
-                        },
-                        leading: Container(
-                          width: 50,
-                          height: 50,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Colors.blue,
-                              width: 2.0,
-                            ),
-                          ),
-                          child: const Icon(
-                            Icons.people,
-                            color: Colors.blue,
-                          ),
-                        ),
-                        title: Text(
-                          title[index],
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        subtitle: Text(
-                          'By ${name[index]}, MMM dd, yyyy',
-                          style: TextStyle(color: Colors.black.withOpacity(0.6)),
-                        ),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.thumb_up, color: Colors.blue, size: 20),
-                              onPressed: () {
-                                debugPrint("You liked this Thread!");
+            Expanded(
+              child: FutureBuilder<List<Thread>>(
+                future: threads,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return Center(child: Text('No threads found.'));
+                  } else {
+                    List<Thread> threads = snapshot.data!;
+                    return ListView.builder(
+                      itemCount: threads.length,
+                      itemBuilder: (context, index) {
+                        Thread thread = threads[index];
+                        return Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Card(
+                            clipBehavior: Clip.antiAlias,
+                            child: ListTile(
+                              contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 8),
+                              onTap: () {
+                                debugPrint("You clicked on this thread!");
                               },
+                              leading: Container(
+                                width: 50,
+                                height: 50,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.blue,
+                                    width: 2.0,
+                                  ),
+                                ),
+                                child: const Icon(
+                                  Icons.people,
+                                  color: Colors.blue,
+                                ),
+                              ),
+                              title: Text(
+                                thread.title,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              subtitle: Text(
+                                'By ${thread.userId}, ${formatDate(thread.createdAt)}',
+                                style: TextStyle(
+                                    color: Colors.black.withOpacity(0.6)),
+                              ),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(Icons.thumb_up,
+                                        color: Colors.blue, size: 20),
+                                    onPressed: () {
+                                      debugPrint("You liked this Thread!");
+                                    },
+                                  ),
+                                  const Text('Likes',
+                                      style: TextStyle(color: Colors.blue)),
+                                ],
+                              ),
                             ),
-                            const Text('Likes', style: TextStyle(color: Colors.blue)) , // Example text
-                          ],
-                        ),
-
-                      ),
-                    ),
-                  );
+                          ),
+                        );
+                      },
+                    );
+                  }
                 },
-              ), 
-
+              ),
             ),
             Center(
               child: ElevatedButton(
@@ -88,7 +139,6 @@ class ForumPage extends StatelessWidget {
                 child: const Text("Create New Thread"),
               ),
             ),
-
           ],
         ),
       ),
