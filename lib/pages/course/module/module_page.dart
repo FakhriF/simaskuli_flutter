@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Introduction to Programming'),
+          title: const Text('Introduction to Programming'),
         ),
-        body: SingleChildScrollView(
+        body: const SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: EdgeInsets.all(8.0),
             child: Column(
               children: [
                 ModuleCard(
@@ -67,7 +69,7 @@ class ModuleCard extends StatelessWidget {
   final String lectureNoteTitle;
   final String lectureNoteDescription;
 
-  ModuleCard({
+  const ModuleCard({super.key, 
     required this.title,
     required this.learningOutcomes,
     required this.materials,
@@ -80,7 +82,7 @@ class ModuleCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.symmetric(vertical: 8.0),
+      margin: const EdgeInsets.symmetric(vertical: 8.0),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -88,46 +90,46 @@ class ModuleCard extends StatelessWidget {
           children: [
             Text(
               title,
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 8.0),
-            Text(
+            const SizedBox(height: 8.0),
+            const Text(
               'Capaian Pembelajaran',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
             ),
             ...learningOutcomes.map((outcome) => ListTile(
-                  leading: Icon(Icons.check),
+                  leading: const Icon(Icons.check),
                   title: Text(outcome),
                 )),
-            SizedBox(height: 8.0),
-            Text(
+            const SizedBox(height: 8.0),
+            const Text(
               'Materi Pembelajaran',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
             ),
             ...materials.map((material) => ListTile(
-                  leading: Icon(Icons.book),
+                  leading: const Icon(Icons.book),
                   title: Text(material),
                 )),
-            SizedBox(height: 8.0),
-            Text(
+            const SizedBox(height: 8.0),
+            const Text(
               'Video & Materi Lainnya',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
             ),
             ...videosAndMaterials,
-            SizedBox(height: 8.0),
+            const SizedBox(height: 8.0),
             Text(
               lectureNoteTitle,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
             ),
             Text(
               lectureNoteDescription,
             ),
-            SizedBox(height: 8.0),
+            const SizedBox(height: 8.0),
             GestureDetector(
               onTap: () {},
               child: Text(
                 lectureNoteUrl,
-                style: TextStyle(
+                style: const TextStyle(
                     color: Colors.blue, decoration: TextDecoration.underline),
               ),
             ),
@@ -143,7 +145,7 @@ class VideoCard extends StatelessWidget {
   final String description;
   final String url;
 
-  VideoCard({
+  const VideoCard({super.key, 
     required this.title,
     required this.description,
     required this.url,
@@ -157,19 +159,19 @@ class VideoCard extends StatelessWidget {
       },
       child: Card(
         color: Colors.grey[200],
-        margin: EdgeInsets.symmetric(vertical: 4.0),
+        margin: const EdgeInsets.symmetric(vertical: 4.0),
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Row(
             children: [
               Icon(Icons.video_collection, size: 48, color: Colors.grey[700]),
-              SizedBox(width: 16.0),
+              const SizedBox(width: 16.0),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     title,
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
                   ),
                   Text(description),
                 ],
