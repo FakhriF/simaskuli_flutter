@@ -6,13 +6,12 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:simaskuli/models/forum.dart';
 
-
 Future<List<Thread>> getThread() async {
   const endpoint = 'https://simaskuli-api.vercel.app/api/api/forum';
 
   final response = await http.get(Uri.parse(endpoint));
   if (response.statusCode == 200) {
-    List<Thread> threads= (json.decode(response.body)["data"] as List)
+    List<Thread> threads = (json.decode(response.body)["data"] as List)
         .map((data) => Thread.fromJson(data))
         .toList();
     return threads;
@@ -131,16 +130,74 @@ class _ForumPageState extends State<ForumPage> {
                 },
               ),
             ),
-            Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  debugPrint("Create New Thread button pressed!");
-                },
-                child: const Text("Create New Thread"),
-              ),
-            ),
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          debugPrint("CLICKED NEW THREAD");
+          final _formKey = GlobalKey<FormState>();
+          final _titleController = TextEditingController();
+          final _contentController = TextEditingController();
+
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: const Text('Create New Thread'),
+                content: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextFormField(
+                        controller: _titleController,
+                        decoration: const InputDecoration(labelText: 'Title'),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter a title';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: 20), // Adding space between fields
+                      TextFormField(
+                        controller: _contentController,
+                        maxLines: null, // Allowing multiline
+                        keyboardType: TextInputType.multiline, // Enabling multiline keyboard
+                        decoration: const InputDecoration(labelText: 'Content'),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter content';
+                          }
+                          return null;
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('Cancel'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        // TODO Add Push Function
+                        Navigator.of(context).pop();
+                      }
+                    },
+                    child: const Text('Create'),
+                  ),
+                ],
+              );
+            },
+          );
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }
