@@ -64,7 +64,7 @@ class _HomePageState extends State<HomePage> {
     final user = await getUserData();
     final dashboardPage = DashboardPage(userData: user);
     final otherPages = [
-      const CourseSelectionPage(),//TODO: Ubah ini menjadi halaman kursus
+      const CourseSelectionPage(), //TODO: Ubah ini menjadi halaman kursus
       const ForumPage(), //TODO: Ubah ini menjadi halaman forum
       ProfilePage(userData: user),
     ];
@@ -138,54 +138,56 @@ class DashboardPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              color: Colors.white,
-              padding: const EdgeInsets.all(24),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("${getGreeting()},"),
-                      Text(
-                        userData.name,
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 24),
-                      ),
-                    ],
-                  ),
-                  CircleAvatar(
-                    radius: 28,
-                    backgroundImage: NetworkImage(userData.profileUrl),
-                  ),
-                ],
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                color: Colors.white,
+                padding: const EdgeInsets.all(24),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text("${getGreeting()},"),
+                        Text(
+                          userData.name,
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 24),
+                        ),
+                      ],
+                    ),
+                    CircleAvatar(
+                      radius: 28,
+                      backgroundImage: NetworkImage(userData.profileUrl),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            Container(
-              padding: const EdgeInsets.all(24),
-              child: const Text(
-                "Courses",
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              Container(
+                padding: const EdgeInsets.all(24),
+                child: const Text(
+                  "Courses",
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
               ),
-            ),
-            CourseSelection(),
-            //TODO: Implement Courses in Dashboard Here!
-            Container(
-              padding: const EdgeInsets.all(24),
-              child: const Text(
-                "Upcoming Quiz",
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              CourseSelection(),
+              //TODO: Implement Courses in Dashboard Here!
+              Container(
+                padding: const EdgeInsets.all(24),
+                child: const Text(
+                  "Upcoming Quiz",
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
               ),
-            ),
-            //TODO: Implement Upcoming Quiz in Dashboard Here!
-            const UpcomingQuiz()
-            //TODO: See the reference design here https://dribbble.com/shots/16244904-Education-Online-Course-Mobile-App
-          ],
+              //TODO: Implement Upcoming Quiz in Dashboard Here!
+              const UpcomingQuiz()
+              //TODO: See the reference design here https://dribbble.com/shots/16244904-Education-Online-Course-Mobile-App
+            ],
+          ),
         ),
       ),
     );

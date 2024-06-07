@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:simaskuli/controller/user_auth_controller.dart';
 import 'package:simaskuli/pages/intro/login_page.dart';
 
 class DeleteAccountPage extends StatelessWidget {
@@ -64,7 +65,7 @@ class DeleteAccountPage extends StatelessWidget {
                   onPressed: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const DeleteAccountFormPage(),
+                        builder: (context) => DeleteAccountFormPage(),
                       )),
                   child: const Text(
                     'Yes, I\'m sure',
@@ -81,7 +82,42 @@ class DeleteAccountPage extends StatelessWidget {
 }
 
 class DeleteAccountFormPage extends StatelessWidget {
-  const DeleteAccountFormPage({super.key});
+  DeleteAccountFormPage({super.key});
+
+  TextEditingController confirm = TextEditingController();
+
+  Future<void> deleteAccount(BuildContext context) async {
+    if (confirm.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        content: const Text('Please Fill Fields'),
+      ));
+    } else {
+      if (confirm.text.toLowerCase() != "delete account") {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          content: const Text('Mohon pastikan ketik ulang dengan benar!'),
+        ));
+        return;
+      }
+
+      final success = await deleteUserAccount(context);
+      if (success) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const LoginPage(),
+          ),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -113,14 +149,15 @@ class DeleteAccountFormPage extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 32.0),
-            const Text("Please type your password to confirm deletion:"),
+            const Text("Please type 'DELETE ACCOUNT' to confirm deletion:"),
             const SizedBox(height: 16.0),
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 TextField(
+                  controller: confirm,
                   decoration: InputDecoration(
-                    labelText: 'Your Password',
+                    labelText: 'Type Here',
                     prefixIcon:
                         const Icon(Icons.password_outlined, color: Colors.grey),
                     border: OutlineInputBorder(
@@ -141,12 +178,7 @@ class DeleteAccountFormPage extends StatelessWidget {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red.shade400,
                       ),
-                      onPressed: () => Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const LoginPage(),
-                        ),
-                      ),
+                      onPressed: () => deleteAccount(context),
                       child: const Row(
                         children: [
                           Icon(Icons.delete_outline, color: Colors.white),

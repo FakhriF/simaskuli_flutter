@@ -43,6 +43,7 @@ class _CourseSelectionPageState extends State<CourseSelectionPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text('Course List'),
       ),
       body: SafeArea(
@@ -64,10 +65,12 @@ class _CourseSelectionPageState extends State<CourseSelectionPage> {
                   return FutureBuilder<User?>(
                     future: _getUserById(course.userId),
                     builder: (context, userSnapshot) {
-                      if (userSnapshot.connectionState == ConnectionState.waiting) {
+                      if (userSnapshot.connectionState ==
+                          ConnectionState.waiting) {
                         return _buildCourseCard(course, 'Loading lecturer...');
                       } else if (userSnapshot.hasError) {
-                        return _buildCourseCard(course, 'Error loading lecturer');
+                        return _buildCourseCard(
+                            course, 'Error loading lecturer');
                       } else if (!userSnapshot.hasData) {
                         return _buildCourseCard(course, 'Lecturer not found');
                       } else {
@@ -77,11 +80,13 @@ class _CourseSelectionPageState extends State<CourseSelectionPage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => CourseDetailPage(course: course),
+                                builder: (context) =>
+                                    CourseDetailPage(course: course),
                               ),
                             );
                           },
-                          child: _buildCourseCard(course, 'Lecturer: ${user.name}'),
+                          child: _buildCourseCard(
+                              course, 'Lecturer: ${user.name}'),
                         );
                       }
                     },
@@ -125,12 +130,16 @@ class _CourseSelectionPageState extends State<CourseSelectionPage> {
         children: [
           Text(
             course.title,
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue),
+            style: TextStyle(
+                fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue),
           ),
           const SizedBox(height: 4.0),
           Text(
             lecturerInfo,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey[700]),
+            style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey[700]),
           ),
           const SizedBox(height: 8.0),
           Text(
