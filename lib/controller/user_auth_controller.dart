@@ -67,7 +67,6 @@ Future<void> registerUser(String name, String email, String password,
   Navigator.of(context).pop();
 
   if (res.statusCode == 201) {
-
     print(res.statusCode);
     print(res.body);
 
@@ -75,7 +74,7 @@ Future<void> registerUser(String name, String email, String password,
 
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('access_token', responseData['access_token']);
-  
+
     await loadUserData();
 
     Navigator.pushReplacement(
@@ -171,6 +170,66 @@ Future<bool> changePasswordController(
       content: Text(response['message']),
     ));
     return false;
+  } else {
+    throw Exception('Failed to load user data');
+  }
+}
+
+Future<bool> deleteUserAccount(BuildContext context) async {
+  showDialog(
+      context: context,
+      builder: (context) => const AlertDialog(
+            content: Row(
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(width: 16),
+                Text("Deleting Your Account..."),
+              ],
+            ),
+          ));
+
+  const endpoint = 'https://simaskuli-api.vercel.app/api/api/user';
+  final token = await getToken();
+  final res = await http.delete(
+    Uri.parse(endpoint),
+    headers: <String, String>{
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
+  );
+
+  Navigator.of(context).pop();
+  if (res.statusCode == 200) {
+    return true;
+  } else if (res.statusCode == 401) {
+    final response = json.decode(res.body);
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      content: Text(response['message']),
+    ));
+    return false;
+  } else {
+    throw Exception('Failed to load user data');
+  }
+}
+
+Future getAllSession() async {
+  const endpoint = 'https://simaskuli-api.vercel.app/api/api/user/session';
+  final token = await getToken();
+  final res = await http.get(
+    Uri.parse(endpoint),
+    headers: <String, String>{
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
+  );
+  if (res.statusCode == 200) {
+    final response = json.decode(res.body);
+    print(response['data']);
+    return response['data'];
   } else {
     throw Exception('Failed to load user data');
   }
