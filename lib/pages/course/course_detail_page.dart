@@ -4,6 +4,7 @@ import 'package:simaskuli/models/course.dart';
 import 'package:simaskuli/controller/course_controller.dart';
 import 'package:simaskuli/models/user.dart';
 import 'package:simaskuli/pages/course/course_update_page.dart';
+import 'package:simaskuli/pages/grades/student_gradebook.dart';
 
 class CourseDetailPage extends StatefulWidget {
   final Course course;
@@ -92,19 +93,44 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
           ),
         ),
       ),
-      floatingActionButton: _currentUserId == widget.course.userId
-          ? FloatingActionButton(
+      floatingActionButton: Stack(
+        children: [
+          if (_currentUserId == widget.course.userId)
+            Positioned(
+              bottom: 16.0,
+              right: 16.0,
+              child: FloatingActionButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CourseUpdatePage(course: widget.course),
+                    ),
+                  );
+                },
+                child: Icon(Icons.edit),
+              ),
+            ),
+          Positioned(
+            bottom: 16.0,
+            right: _currentUserId == widget.course.userId ? 80.0 : 16.0,
+            child: FloatingActionButton(
               onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => CourseUpdatePage(course: widget.course),
+                    builder: (context) => StudentGradeBook(
+                      courseId: widget.course.id,
+                      userId: _currentUserId!,
+                    ),
                   ),
                 );
               },
-              child: Icon(Icons.edit),
-            )
-          : null,
+              child: Icon(Icons.book),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

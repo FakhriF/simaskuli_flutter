@@ -79,14 +79,6 @@ class ProfilePage extends StatelessWidget {
                               builder: (context) => const SettingsPage())),
                     ),
                     ListTile(
-                      leading: const Icon(Icons.school_rounded),
-                      title: const Text("Gradebook"),
-                      onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => StudentGradeBook())),
-                    ),
-                    ListTile(
                       leading:
                           const Icon(Icons.logout_rounded, color: Colors.red),
                       title: const Text(

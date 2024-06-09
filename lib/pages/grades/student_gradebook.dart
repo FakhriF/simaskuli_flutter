@@ -7,12 +7,16 @@ import 'package:simaskuli/models/grade.dart';
 import 'package:simaskuli/models/user.dart';
 
 class StudentGradeBook extends StatefulWidget {
+  final int courseId;
+  final int userId;
+
+  StudentGradeBook({required this.courseId, required this.userId});
+
   @override
   State<StudentGradeBook> createState() => _StudentGradeBookState();
 }
 
 class _StudentGradeBookState extends State<StudentGradeBook> {
-  int? _currentUserId;
   String studentName = 'Loading...';
   String studentGrade = 'Loading...';
   List<Grade> subjects = [];
@@ -20,23 +24,13 @@ class _StudentGradeBookState extends State<StudentGradeBook> {
   @override
   void initState() {
     super.initState();
-    _loadCurrentUserId();
+    _loadUserData();
   }
 
-  Future<void> _loadCurrentUserId() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _currentUserId = prefs.getInt('userId');
-      if (_currentUserId != null) {
-        _loadUserData(_currentUserId!);
-      }
-    });
-  }
-
-  Future<void> _loadUserData(int userId) async {
+  Future<void> _loadUserData() async {
     try {
-      final user = await CourseController().getUserById(userId);
-      final grades = await GradesController().getQuizData(0, userId); // Fetching quiz data for course ID 0
+      final user = await CourseController().getUserById(widget.userId);
+      final grades = await GradesController().getQuizData(widget.courseId, widget.userId); // Fetching quiz data for the course
       setState(() {
         studentName = user.name;
         studentGrade = _calculateAverageGrade(grades); // Calculate average grade from quizzes
