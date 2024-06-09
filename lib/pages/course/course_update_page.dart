@@ -3,17 +3,21 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simaskuli/controller/course_controller.dart';
 import 'package:simaskuli/models/course.dart';
 
-class CourseCreatePage extends StatefulWidget {
+class CourseUpdatePage extends StatefulWidget {
+  final Course course;
+
+  CourseUpdatePage({super.key, required this.course});
+
   @override
-  _CourseCreatePageState createState() => _CourseCreatePageState();
+  _CourseUpdatePageState createState() => _CourseUpdatePageState();
 }
 
-class _CourseCreatePageState extends State<CourseCreatePage> {
+class _CourseUpdatePageState extends State<CourseUpdatePage> {
   final _formKey = GlobalKey<FormState>();
-  final _titleController = TextEditingController();
-  final _descriptionController = TextEditingController();
-  final _learningOutcomesController = TextEditingController();
-  final _imageUrlController = TextEditingController();
+  late TextEditingController _titleController;
+  late TextEditingController _descriptionController;
+  late TextEditingController _learningOutcomesController;
+  late TextEditingController _imageUrlController;
 
   final CourseController _courseController = CourseController();
   int? _userId;
@@ -21,6 +25,10 @@ class _CourseCreatePageState extends State<CourseCreatePage> {
   @override
   void initState() {
     super.initState();
+    _titleController = TextEditingController(text: widget.course.title);
+    _descriptionController = TextEditingController(text: widget.course.description);
+    _learningOutcomesController = TextEditingController(text: widget.course.learningOutcomes);
+    _imageUrlController = TextEditingController(text: widget.course.imageUrl);
     _loadUserId();
   }
 
@@ -31,11 +39,45 @@ class _CourseCreatePageState extends State<CourseCreatePage> {
     });
   }
 
+  void _deleteCourse() async {
+    final confirmed = await _showConfirmationDialog();
+    if (confirmed) {
+      try {
+        await _courseController.deleteCourse(widget.course.id);
+        Navigator.pop(context, true);
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to delete course: $e')),
+        );
+      }
+    }
+  }
+
+  Future<bool> _showConfirmationDialog() async {
+    return await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Confirm Deletion'),
+        content: Text('Are you sure you want to delete this course?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text('Delete'),
+          ),
+        ],
+      ),
+    ) ?? false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Create Course'),
+        title: Text('Update Course'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -81,19 +123,24 @@ class _CourseCreatePageState extends State<CourseCreatePage> {
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    _createCourse();
+                    _updateCourse();
                   }
                 },
-                child: Text('Create Course'),
+                child: Text('Save Changes'),
               ),
             ],
           ),
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _deleteCourse,
+        child: Icon(Icons.delete),
+        backgroundColor: Colors.red,
+      ),
     );
   }
 
-  void _createCourse() async {
+  void _updateCourse() async {
     if (_userId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to load user ID')),
@@ -105,24 +152,24 @@ class _CourseCreatePageState extends State<CourseCreatePage> {
         ? _imageUrlController.text
         : 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Google_2015_logo.svg/640px-Google_2015_logo.svg.png';
 
-    Course newCourse = Course(
-      id: 0,
+    Course updatedCourse = Course(
+      id: widget.course.id,
       title: _titleController.text,
       description: _descriptionController.text,
       learningOutcomes: _learningOutcomesController.text,
       imageUrl: imageUrl,
-      userId: _userId!,
+      userId: widget.course.userId,
     );
 
     try {
-      Course createdCourse = await _courseController.createCourse(newCourse);
+      Course editedCourse = await _courseController.updateCourse(updatedCourse);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Course created: ${createdCourse.title}')),
+        SnackBar(content: Text('Course updated: ${editedCourse.title}')),
       );
-      Navigator.pop(context);
+      Navigator.pop(context, editedCourse);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to create course: $e')),
+        SnackBar(content: Text('Failed to update course: $e')),
       );
     }
   }

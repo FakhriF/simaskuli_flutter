@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simaskuli/models/course.dart';
 import 'package:simaskuli/controller/course_controller.dart';
 import 'package:simaskuli/models/user.dart';
+import 'package:simaskuli/pages/course/course_update_page.dart';
 
 class CourseDetailPage extends StatefulWidget {
   final Course course;
@@ -37,40 +38,6 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
       print('Failed to load user: $e');
       return null;
     }
-  }
-
-  void _deleteCourse() async {
-    final confirmed = await _showConfirmationDialog();
-    if (confirmed) {
-      try {
-        await _courseController.deleteCourse(widget.course.id);
-        Navigator.pop(context, true);
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to delete course: $e')),
-        );
-      }
-    }
-  }
-
-  Future<bool> _showConfirmationDialog() async {
-    return await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Confirm Deletion'),
-        content: Text('Are you sure you want to delete this course?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: Text('Delete'),
-          ),
-        ],
-      ),
-    ) ?? false;
   }
 
   @override
@@ -127,9 +94,15 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
       ),
       floatingActionButton: _currentUserId == widget.course.userId
           ? FloatingActionButton(
-              onPressed: _deleteCourse,
-              child: Icon(Icons.delete),
-              backgroundColor: Colors.red,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CourseUpdatePage(course: widget.course),
+                  ),
+                );
+              },
+              child: Icon(Icons.edit),
             )
           : null,
     );
