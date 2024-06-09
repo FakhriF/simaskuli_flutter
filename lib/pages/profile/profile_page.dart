@@ -84,7 +84,7 @@ class ProfilePage extends StatelessWidget {
                       onTap: () => Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => studentGradeBook())),
+                              builder: (context) => StudentGradeBook())),
                     ),
                     ListTile(
                       leading:
