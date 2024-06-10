@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simaskuli/models/forum.dart';
+import 'package:simaskuli/pages/forum/thread_page.dart';
 
 Future<List<Thread>> getThread() async {
   const endpoint = 'https://simaskuli-api.vercel.app/api/api/forum';
@@ -110,7 +111,12 @@ class _ForumPageState extends State<ForumPage> {
                               contentPadding: const EdgeInsets.symmetric(
                                   horizontal: 16, vertical: 8),
                               onTap: () {
-                                debugPrint("You clicked on this thread!");
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ThreadPage(thread: thread),
+                                  ),
+                                );
                               },
                               leading: CircleAvatar(
                                 backgroundColor: Colors.blue,
