@@ -5,7 +5,7 @@ class ThreadPost {
   final int id;
   final int threadId;
   final int userId;
-  final String content;
+  String content;
   final bool like;
   final String createdAt;
   final String updatedAt;

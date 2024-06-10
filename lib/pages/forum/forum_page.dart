@@ -8,39 +8,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simaskuli/models/forum.dart';
 import 'package:simaskuli/pages/forum/thread_page.dart';
 
-Future<List<Thread>> getThread() async {
-  const endpoint = 'https://simaskuli-api.vercel.app/api/api/forum';
-
-  final response = await http.get(Uri.parse(endpoint));
-  if (response.statusCode == 200) {
-    List<Thread> threads = (json.decode(response.body)["data"] as List)
-        .map((data) => Thread.fromJson(data))
-        .toList();
-    return threads;
-  } else {
-    throw Exception('Failed');
-  }
-}
-
-Future<void> createThread(String title, String content, int userId) async {
-  const endpoint = 'https://simaskuli-api.vercel.app/api/api/forum';
-
-  final response = await http.post(
-    Uri.parse(endpoint),
-    body: json.encode({
-      'title': title,
-      'content': content,
-      'userId': userId,
-    }),
-    headers: {'Content-Type': 'application/json'},
-  );
-
-  if (response.statusCode == 200) {
-    debugPrint('Post created successfully');
-  } else {
-    throw Exception('Failed to create post: ${response.statusCode}');
-  }
-}
 
 class ForumPage extends StatefulWidget {
   const ForumPage({Key? key}) : super(key: key); //TODO PASS USER PARAMETER FROM PREVIOUS PAGE
@@ -60,6 +27,47 @@ class _ForumPageState extends State<ForumPage> {
     loadCurrentUser();
   }
 
+  Future<List<Thread>> getThread() async {
+    const endpoint = 'https://simaskuli-api.vercel.app/api/api/forum';
+
+    final response = await http.get(Uri.parse(endpoint));
+    if (response.statusCode == 200) {
+      List<Thread> threads = (json.decode(response.body)["data"] as List)
+          .map((data) => Thread.fromJson(data))
+          .toList();
+      return threads;
+    } else {
+      throw Exception('Failed');
+    }
+  }
+
+  Future<void> createThread(String title, String content, int userId) async {
+    const endpoint = 'https://simaskuli-api.vercel.app/api/api/forum';
+
+    final requestBody = json.encode({
+      'title': title,
+      'content': content,
+      'user_id': userId,
+    });
+
+    debugPrint('Request Body: $requestBody');
+
+    final response = await http.post(
+      Uri.parse(endpoint),
+      body: requestBody,
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    debugPrint('Response Status Code: ${response.statusCode}');
+    debugPrint('Response Body: ${response.body}');
+
+    if (response.statusCode == 201) {
+      debugPrint('Post created successfully');
+    } else {
+      throw Exception('Failed to create post: ${response.statusCode}');
+    }
+  }
+
   String formatDate(String date) {
     final DateTime parsedDate = DateTime.parse(date);
     final DateFormat formatter = DateFormat('yyyy-MM-dd');
@@ -69,7 +77,7 @@ class _ForumPageState extends State<ForumPage> {
   Future<void> loadCurrentUser() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      currentUser = prefs.getInt('userId') ?? 0; // Default value if userId is not found
+      currentUser = prefs.getInt('userId') ?? 0;
     });
   }
 

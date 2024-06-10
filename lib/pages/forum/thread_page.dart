@@ -23,6 +23,9 @@ class _ThreadPageState extends State<ThreadPage> {
   List<ThreadPost> _replies = [];
   int? currentUser;
 
+  String? _editedContent; // Add this line
+  ThreadPost? _replyBeingEdited; // Add this line
+
 
   @override
   void initState() {
@@ -81,6 +84,74 @@ class _ThreadPageState extends State<ThreadPage> {
         }
       } catch (error) {
         debugPrint('Error submitting reply: $error');
+      }
+    }
+  }
+
+  void editReply(ThreadPost reply) {
+    _replyBeingEdited = reply; // Store the reply being edited
+    _editedContent = reply.content; // Initialize the edited content with the current reply content
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Edit Reply'),
+          content: TextField(
+            controller: TextEditingController(text: _editedContent),
+            onChanged: (value) {
+              setState(() {
+                _editedContent = value;
+              });
+            },
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _replyBeingEdited = null; // Reset the reply being edited
+                _editedContent = null; // Reset the edited content
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                saveEditedReply();
+              },
+              child: Text('Save'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // TODO: NOT CURRENTLY WORKING
+
+  Future<void> saveEditedReply() async {
+    if (_editedContent != null && _replyBeingEdited != null) {
+      try {
+        final response = await http.put(
+          Uri.parse('https://simaskuli-api.vercel.app/api/api/forum/${widget.thread.id}/posts/${_replyBeingEdited!.id}'),
+          headers: {'Content-Type': 'application/json'},
+          body: json.encode({'content': _editedContent}),
+        );
+
+        if (response.statusCode == 200) {
+          debugPrint('Reply updated successfully');
+          setState(() {
+            final updatedIndex = _replies.indexWhere((reply) => reply.id == _replyBeingEdited!.id);
+            _replies[updatedIndex].content = _editedContent!;
+          });
+        } else {
+          debugPrint('Failed to update reply: ${response.statusCode}');
+        }
+      } catch (error) {
+        debugPrint('Error updating reply: $error');
+      } finally {
+        _replyBeingEdited = null;
+        _editedContent = null;
       }
     }
   }
@@ -148,11 +219,11 @@ class _ThreadPageState extends State<ThreadPage> {
       return '${(difference.inDays / 365).floor()} years ago';
     }
   }
-
-  void editReply(ThreadPost reply) {
-    // Implement edit reply functionality
-    debugPrint('Edit reply: ${reply.id}');
-  }
+  //
+  // void editReply(ThreadPost reply) {
+  //   // Implement edit reply functionality
+  //   debugPrint('Edit reply: ${reply.id}');
+  // }
 
   // void deleteReply(ThreadPost reply) {
   //   // Implement delete reply functionality
