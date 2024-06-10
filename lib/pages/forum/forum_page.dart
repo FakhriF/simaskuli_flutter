@@ -68,6 +68,21 @@ class _ForumPageState extends State<ForumPage> {
     }
   }
 
+  Future<void> _deleteThread(int threadId) async {
+    final endpoint = 'https://simaskuli-api.vercel.app/api/api/forum/$threadId';
+
+    final response = await http.delete(Uri.parse(endpoint));
+
+    if (response.statusCode == 200) {
+      debugPrint('Thread deleted successfully');
+      setState(() {
+        threads = getThread();
+      });
+    } else {
+      throw Exception('Failed to delete thread: ${response.statusCode}');
+    }
+  }
+
   String formatDate(String date) {
     final DateTime parsedDate = DateTime.parse(date);
     final DateFormat formatter = DateFormat('yyyy-MM-dd');
@@ -79,6 +94,40 @@ class _ForumPageState extends State<ForumPage> {
     setState(() {
       currentUser = prefs.getInt('userId') ?? 0;
     });
+  }
+
+  void _showThreadMenu(BuildContext context, Thread thread) {
+    final isCurrentUserThread = thread.user.id == currentUser;
+
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.thumb_up, color: Colors.blue),
+                title: const Text('Like'),
+                onTap: () {
+                  debugPrint("You liked this Thread!");
+                  Navigator.pop(context);
+                },
+              ),
+              if (isCurrentUserThread)
+                ListTile(
+                  leading: const Icon(Icons.delete, color: Colors.red),
+                  title: const Text('Delete', style: TextStyle(color: Colors.red),),
+                  onTap: () {
+                    _deleteThread(thread.id);
+                    Navigator.pop(context);
+                  },
+                ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -140,19 +189,11 @@ class _ForumPageState extends State<ForumPage> {
                                 style: TextStyle(
                                     color: Colors.black.withOpacity(0.6)),
                               ),
-                              trailing: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  IconButton(
-                                    icon: const Icon(Icons.thumb_up,
-                                        color: Colors.blue, size: 20),
-                                    onPressed: () {
-                                      debugPrint("You liked this Thread!");
-                                    },
-                                  ),
-                                  const Text('Likes',
-                                      style: TextStyle(color: Colors.blue)),
-                                ],
+                              trailing: IconButton(
+                                icon: const Icon(Icons.more_vert),
+                                onPressed: () {
+                                  _showThreadMenu(context, thread);
+                                },
                               ),
                             ),
                           ),

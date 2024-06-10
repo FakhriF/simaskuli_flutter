@@ -250,8 +250,8 @@ class _ThreadPageState extends State<ThreadPage> {
                   },
                 ),
                 ListTile(
-                  leading: Icon(Icons.delete),
-                  title: Text('Delete'),
+                  leading: Icon(Icons.delete, color: Colors.red,),
+                  title: Text('Delete', style: TextStyle(color: Colors.red)),
                   onTap: () {
                     Navigator.pop(context);
                     deleteReply(reply);
@@ -259,7 +259,7 @@ class _ThreadPageState extends State<ThreadPage> {
                 ),
               ] else ...[
                 ListTile(
-                  leading: Icon(Icons.reply),
+                  leading: Icon(Icons.reply, color: Colors.blue),
                   title: Text('Reply'),
                   onTap: () {
                     Navigator.pop(context);
@@ -305,102 +305,69 @@ class _ThreadPageState extends State<ThreadPage> {
                 } else if (snapshot.hasError) {
                   return Center(child: Text('Failed to load replies: ${snapshot.error}'));
                 } else {
-                  _replies = snapshot.data!;
+                  final replies = snapshot.data!;
                   return ListView.builder(
                     shrinkWrap: true,
                     physics: NeverScrollableScrollPhysics(),
-                    itemCount: _replies.length,
+                    itemCount: replies.length,
                     itemBuilder: (context, index) {
-                      final reply = _replies[index];
+                      final reply = replies[index];
                       final isCurrentUser = reply.userId == currentUser;
                       return ListTile(
                         leading: CircleAvatar(
                           backgroundImage: NetworkImage(reply.user.profileUrl),
                         ),
                         title: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(reply.user.name),
-                            SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                formatTimeDifference(reply.createdAt),
-                                textAlign: TextAlign.right,
-                                style: TextStyle(fontSize: 12),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            PopupMenuButton<String>(
-                              icon: Icon(Icons.more_vert, size: 16),
-                              onSelected: (String value) {
-                                if (value == 'edit') {
-                                  editReply(reply);
-                                } else if (value == 'delete') {
-                                  deleteReply(reply);
-                                } else if (value == 'reply') {
-                                  // replyToPost(reply);
-                                }
-                              },
-                              itemBuilder: (BuildContext context) => [
-                                if (isCurrentUser) ...[
-                                  PopupMenuItem<String>(
-                                    value: 'edit',
-                                    child: Text('Edit'),
-                                  ),
-                                  PopupMenuItem<String>(
-                                    value: 'delete',
-                                    child: Text('Delete'),
-                                  ),
-                                ] else ...[
-                                  PopupMenuItem<String>(
-                                    value: 'reply',
-                                    child: Text('Reply'),
-                                  ),
-                                ],
-                              ],
+                            Text(
+                              formatTimeDifference(reply.createdAt),
+                              style: TextStyle(fontSize: 12),
                             ),
                           ],
                         ),
                         subtitle: Text(reply.content),
+                          trailing: IconButton(
+                            icon: Icon(Icons.more_vert),
+                            onPressed: () => showOptionsBottomSheet(context, reply),
+                          ),
                       );
                     },
                   );
                 }
               },
             ),
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: Container(
-                padding: EdgeInsets.all(8.0),
-                decoration: BoxDecoration(
-                  border: Border(top: BorderSide(color: Colors.grey[300]!)),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _replyController,
-                        decoration: InputDecoration(
-                          hintText: 'Post a new reply...',
-                          border: InputBorder.none,
-                        ),
-                        onTap: () {
-                          setState(() {
-                            _isReplying = true;
-                          });
-                        },
+            Container(
+              padding: EdgeInsets.all(8.0),
+              decoration: BoxDecoration(
+                border: Border(top: BorderSide(color: Colors.grey[300]!)),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _replyController,
+                      decoration: InputDecoration(
+                        hintText: 'Post a new reply...',
+                        border: InputBorder.none,
                       ),
+                      onTap: () {
+                        setState(() {
+                          _isReplying = true;
+                        });
+                      },
                     ),
-                    if (_isReplying)
-                      IconButton(
-                        icon: Icon(Icons.send),
-                        onPressed: postReply,
-                      ),
-                  ],
-                ),
+                  ),
+                  if (_isReplying)
+                    IconButton(
+                      icon: Icon(Icons.send),
+                      onPressed: postReply,
+                    ),
+                ],
               ),
             ),
+
           ],
         ),
       ),
