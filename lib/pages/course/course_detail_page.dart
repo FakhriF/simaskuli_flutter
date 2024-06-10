@@ -4,6 +4,7 @@ import 'package:simaskuli/models/course.dart';
 import 'package:simaskuli/controller/course_controller.dart';
 import 'package:simaskuli/models/user.dart';
 import 'package:simaskuli/pages/course/course_update_page.dart';
+import 'package:simaskuli/pages/course_building_map/course_building_map.dart';
 import 'package:simaskuli/pages/grades/student_gradebook.dart';
 
 class CourseDetailPage extends StatefulWidget {
@@ -89,6 +90,20 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                 'Learning Outcomes: ${widget.course.learningOutcomes}',
                 style: TextStyle(fontSize: 16, color: Colors.grey[800]),
               ),
+              const SizedBox(height: 16.0), // Add spacing between course details and the button
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MapsPage(
+                        courseId: widget.course.id,
+                      ),
+                    ),
+                  );
+                },
+                child: Text('View Course Building Map'),
+              ),
             ],
           ),
         ),
@@ -129,6 +144,23 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
               child: Icon(Icons.book),
             ),
           ),
+          // Positioned(
+          //   bottom: 16.0,
+          //   left: 16.0,
+          //   child: FloatingActionButton(
+          //     onPressed: () {
+          //       Navigator.push(
+          //         context,
+          //         MaterialPageRoute(
+          //           builder: (context) => MapsPage(
+          //             courseId: widget.course.id,
+          //           ),
+          //         ),
+          //       );
+          //     },
+          //     child: Icon(Icons.map),
+          //   ),
+          // ),
         ],
       ),
     );
