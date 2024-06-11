@@ -29,7 +29,7 @@ class EnrollmentController {
     }
   }
 
-  // Enroll in a course
+ // Enroll in a course
   Future<void> store(int userId, int courseId) async {
     try {
       final response = await http.post(
@@ -109,11 +109,10 @@ class EnrollmentController {
   Future<void> destroy(int userId, int courseId) async {
     try {
       final response = await http.delete(
-        Uri.parse(enrollmentApiUrl),
+        Uri.parse('$enrollmentApiUrl/$courseId/$userId'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
-        body: jsonEncode({'user_id': userId, 'course_id': courseId}),
       );
 
       if (response.statusCode != 200) {
@@ -148,11 +147,11 @@ class EnrollmentController {
   // Check if user is enrolled in course
   Future<bool> isEnrolled(int userId, int courseId) async {
     try {
-      final response = await http.get(Uri.parse('$enrollmentApiUrl/course/$courseId'));
+      final response = await http.get(Uri.parse('$enrollmentApiUrl/$courseId/$userId'));
 
       if (response.statusCode == 200) {
-        List jsonResponse = json.decode(response.body);
-        return jsonResponse.any((enrollment) => enrollment['user_id'] == userId);
+        Map<String, dynamic> jsonResponse = json.decode(response.body);
+        return jsonResponse['exists'];
       } else {
         print('Failed to check enrollment: ${response.statusCode}');
         print('Response body: ${response.body}');
@@ -163,5 +162,4 @@ class EnrollmentController {
       throw Exception('Failed to check enrollment');
     }
   }
-
 }
