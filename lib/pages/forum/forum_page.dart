@@ -6,40 +6,8 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simaskuli/models/forum.dart';
+import 'package:simaskuli/pages/forum/thread_page.dart';
 
-Future<List<Thread>> getThread() async {
-  const endpoint = 'https://simaskuli-api.vercel.app/api/api/forum';
-
-  final response = await http.get(Uri.parse(endpoint));
-  if (response.statusCode == 200) {
-    List<Thread> threads = (json.decode(response.body)["data"] as List)
-        .map((data) => Thread.fromJson(data))
-        .toList();
-    return threads;
-  } else {
-    throw Exception('Failed');
-  }
-}
-
-Future<void> createThread(String title, String content, int userId) async {
-  const endpoint = 'https://simaskuli-api.vercel.app/api/api/forum';
-
-  final response = await http.post(
-    Uri.parse(endpoint),
-    body: json.encode({
-      'title': title,
-      'content': content,
-      'userId': userId,
-    }),
-    headers: {'Content-Type': 'application/json'},
-  );
-
-  if (response.statusCode == 200) {
-    debugPrint('Post created successfully');
-  } else {
-    throw Exception('Failed to create post: ${response.statusCode}');
-  }
-}
 
 class ForumPage extends StatefulWidget {
   const ForumPage({Key? key}) : super(key: key); //TODO PASS USER PARAMETER FROM PREVIOUS PAGE
@@ -59,6 +27,62 @@ class _ForumPageState extends State<ForumPage> {
     loadCurrentUser();
   }
 
+  Future<List<Thread>> getThread() async {
+    const endpoint = 'https://simaskuli-api.vercel.app/api/api/forum';
+
+    final response = await http.get(Uri.parse(endpoint));
+    if (response.statusCode == 200) {
+      List<Thread> threads = (json.decode(response.body)["data"] as List)
+          .map((data) => Thread.fromJson(data))
+          .toList();
+      return threads;
+    } else {
+      throw Exception('Failed');
+    }
+  }
+
+  Future<void> createThread(String title, String content, int userId) async {
+    const endpoint = 'https://simaskuli-api.vercel.app/api/api/forum';
+
+    final requestBody = json.encode({
+      'title': title,
+      'content': content,
+      'user_id': userId,
+    });
+
+    debugPrint('Request Body: $requestBody');
+
+    final response = await http.post(
+      Uri.parse(endpoint),
+      body: requestBody,
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    debugPrint('Response Status Code: ${response.statusCode}');
+    debugPrint('Response Body: ${response.body}');
+
+    if (response.statusCode == 201) {
+      debugPrint('Post created successfully');
+    } else {
+      throw Exception('Failed to create post: ${response.statusCode}');
+    }
+  }
+
+  Future<void> _deleteThread(int threadId) async {
+    final endpoint = 'https://simaskuli-api.vercel.app/api/api/forum/$threadId';
+
+    final response = await http.delete(Uri.parse(endpoint));
+
+    if (response.statusCode == 200) {
+      debugPrint('Thread deleted successfully');
+      setState(() {
+        threads = getThread();
+      });
+    } else {
+      throw Exception('Failed to delete thread: ${response.statusCode}');
+    }
+  }
+
   String formatDate(String date) {
     final DateTime parsedDate = DateTime.parse(date);
     final DateFormat formatter = DateFormat('yyyy-MM-dd');
@@ -68,8 +92,42 @@ class _ForumPageState extends State<ForumPage> {
   Future<void> loadCurrentUser() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      currentUser = prefs.getInt('userId') ?? 0; // Default value if userId is not found
+      currentUser = prefs.getInt('userId') ?? 0;
     });
+  }
+
+  void _showThreadMenu(BuildContext context, Thread thread) {
+    final isCurrentUserThread = thread.user.id == currentUser;
+
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.thumb_up, color: Colors.blue),
+                title: const Text('Like'),
+                onTap: () {
+                  debugPrint("You liked this Thread!");
+                  Navigator.pop(context);
+                },
+              ),
+              if (isCurrentUserThread)
+                ListTile(
+                  leading: const Icon(Icons.delete, color: Colors.red),
+                  title: const Text('Delete', style: TextStyle(color: Colors.red),),
+                  onTap: () {
+                    _deleteThread(thread.id);
+                    Navigator.pop(context);
+                  },
+                ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -110,7 +168,12 @@ class _ForumPageState extends State<ForumPage> {
                               contentPadding: const EdgeInsets.symmetric(
                                   horizontal: 16, vertical: 8),
                               onTap: () {
-                                debugPrint("You clicked on this thread!");
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ThreadPage(thread: thread),
+                                  ),
+                                );
                               },
                               leading: CircleAvatar(
                                 backgroundColor: Colors.blue,
@@ -126,19 +189,11 @@ class _ForumPageState extends State<ForumPage> {
                                 style: TextStyle(
                                     color: Colors.black.withOpacity(0.6)),
                               ),
-                              trailing: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  IconButton(
-                                    icon: const Icon(Icons.thumb_up,
-                                        color: Colors.blue, size: 20),
-                                    onPressed: () {
-                                      debugPrint("You liked this Thread!");
-                                    },
-                                  ),
-                                  const Text('Likes',
-                                      style: TextStyle(color: Colors.blue)),
-                                ],
+                              trailing: IconButton(
+                                icon: const Icon(Icons.more_vert),
+                                onPressed: () {
+                                  _showThreadMenu(context, thread);
+                                },
                               ),
                             ),
                           ),

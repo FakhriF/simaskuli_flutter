@@ -13,7 +13,7 @@ class CourseSelection extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         children: <Widget>[
           Container(
-            width: 320,
+            width: 350,
             margin: EdgeInsets.only(left: 20),
             padding: EdgeInsets.all(15),
             decoration: BoxDecoration(
