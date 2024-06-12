@@ -6,40 +6,8 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simaskuli/models/forum.dart';
+import 'package:simaskuli/pages/forum/thread_page.dart';
 
-Future<List<Thread>> getThread() async {
-  const endpoint = 'https://simaskuli-api.vercel.app/api/api/forum';
-
-  final response = await http.get(Uri.parse(endpoint));
-  if (response.statusCode == 200) {
-    List<Thread> threads = (json.decode(response.body)["data"] as List)
-        .map((data) => Thread.fromJson(data))
-        .toList();
-    return threads;
-  } else {
-    throw Exception('Failed');
-  }
-}
-
-Future<void> createThread(String title, String content, int userId) async {
-  const endpoint = 'https://simaskuli-api.vercel.app/api/api/forum';
-
-  final response = await http.post(
-    Uri.parse(endpoint),
-    body: json.encode({
-      'title': title,
-      'content': content,
-      'userId': userId,
-    }),
-    headers: {'Content-Type': 'application/json'},
-  );
-
-  if (response.statusCode == 200) {
-    debugPrint('Post created successfully');
-  } else {
-    throw Exception('Failed to create post: ${response.statusCode}');
-  }
-}
 
 class ForumPage extends StatefulWidget {
   const ForumPage({Key? key}) : super(key: key); //TODO PASS USER PARAMETER FROM PREVIOUS PAGE
@@ -59,6 +27,62 @@ class _ForumPageState extends State<ForumPage> {
     loadCurrentUser();
   }
 
+  Future<List<Thread>> getThread() async {
+    const endpoint = 'https://simaskuli-api.vercel.app/api/api/forum';
+
+    final response = await http.get(Uri.parse(endpoint));
+    if (response.statusCode == 200) {
+      List<Thread> threads = (json.decode(response.body)["data"] as List)
+          .map((data) => Thread.fromJson(data))
+          .toList();
+      return threads;
+    } else {
+      throw Exception('Failed');
+    }
+  }
+
+  Future<void> createThread(String title, String content, int userId) async {
+    const endpoint = 'https://simaskuli-api.vercel.app/api/api/forum';
+
+    final requestBody = json.encode({
+      'title': title,
+      'content': content,
+      'user_id': userId,
+    });
+
+    debugPrint('Request Body: $requestBody');
+
+    final response = await http.post(
+      Uri.parse(endpoint),
+      body: requestBody,
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    debugPrint('Response Status Code: ${response.statusCode}');
+    debugPrint('Response Body: ${response.body}');
+
+    if (response.statusCode == 201) {
+      debugPrint('Post created successfully');
+    } else {
+      throw Exception('Failed to create post: ${response.statusCode}');
+    }
+  }
+
+  Future<void> _deleteThread(int threadId) async {
+    final endpoint = 'https://simaskuli-api.vercel.app/api/api/forum/$threadId';
+
+    final response = await http.delete(Uri.parse(endpoint));
+
+    if (response.statusCode == 200) {
+      debugPrint('Thread deleted successfully');
+      setState(() {
+        threads = threads.then((list) => list.where((thread) => thread.id != threadId).toList());
+      });
+    } else {
+      throw Exception('Failed to delete thread: ${response.statusCode}');
+    }
+  }
+
   String formatDate(String date) {
     final DateTime parsedDate = DateTime.parse(date);
     final DateFormat formatter = DateFormat('yyyy-MM-dd');
@@ -68,88 +92,126 @@ class _ForumPageState extends State<ForumPage> {
   Future<void> loadCurrentUser() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      currentUser = prefs.getInt('userId') ?? 0; // Default value if userId is not found
+      currentUser = prefs.getInt('userId') ?? 0;
     });
+  }
+
+  void _showThreadMenu(BuildContext context, Thread thread) {
+    final isCurrentUserThread = thread.user.id == currentUser;
+
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.thumb_up, color: Colors.blue),
+                title: const Text('Like'),
+                onTap: () {
+                  debugPrint("You liked this Thread!");
+                  Navigator.pop(context);
+                },
+              ),
+              if (isCurrentUserThread)
+                ListTile(
+                  leading: const Icon(Icons.delete, color: Colors.red),
+                  title: const Text('Delete', style: TextStyle(color: Colors.red)),
+                  onTap: () {
+                    Navigator.pop(context);
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Confirm Deletion'),
+                          content: const Text('Are you sure you want to delete this thread?'),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: const Text('Cancel'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                                _deleteThread(thread.id);
+                              },
+                              child: const Text('Delete'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(24),
-              child: const Text(
-                "Forum",
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-            ),
-            Expanded(
-              child: FutureBuilder<List<Thread>>(
-                future: threads,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return Center(child: Text('Error: ${snapshot.error}'));
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return Center(child: Text('No threads found.'));
-                  } else {
-                    List<Thread> threads = snapshot.data!;
-                    return ListView.builder(
-                      itemCount: threads.length,
-                      itemBuilder: (context, index) {
-                        Thread thread = threads[index];
-                        return Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Card(
-                            clipBehavior: Clip.antiAlias,
-                            child: ListTile(
-                              contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 8),
-                              onTap: () {
-                                debugPrint("You clicked on this thread!");
-                              },
-                              leading: CircleAvatar(
-                                backgroundColor: Colors.blue,
-                                backgroundImage: NetworkImage(thread.user.profileUrl),
-                              ),
-                              title: Text(
-                                thread.title,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              subtitle: Text(
-                                'By ${thread.user.name}, ${formatDate(thread.createdAt)}',
-                                style: TextStyle(
-                                    color: Colors.black.withOpacity(0.6)),
-                              ),
-                              trailing: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  IconButton(
-                                    icon: const Icon(Icons.thumb_up,
-                                        color: Colors.blue, size: 20),
-                                    onPressed: () {
-                                      debugPrint("You liked this Thread!");
-                                    },
-                                  ),
-                                  const Text('Likes',
-                                      style: TextStyle(color: Colors.blue)),
-                                ],
-                              ),
-                            ),
-                          ),
-                        );
+      appBar: AppBar(
+        title: const Text('Forum')
+      ),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          setState(() {
+            threads = getThread();
+          });
+        },
+        child: FutureBuilder<List<Thread>>(
+          future: threads,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return const Center(child: Text('No threads found.'));
+            } else {
+              List<Thread> threads = snapshot.data!;
+              return ListView.separated(
+                itemCount: threads.length,
+                separatorBuilder: (context, index) => const Divider(),
+                itemBuilder: (context, index) {
+                  Thread thread = threads[index];
+                  return ListTile(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ThreadPage(thread: thread),
+                        ),
+                      );
+                    },
+                    leading: CircleAvatar(
+                      backgroundImage: NetworkImage(thread.user.profileUrl),
+                    ),
+                    title: Text(
+                      thread.title,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: Text(
+                      'By ${thread.user.name}, ${formatDate(thread.createdAt)}',
+                      style: TextStyle(color: Colors.black.withOpacity(0.6)),
+                    ),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.more_vert),
+                      onPressed: () {
+                        _showThreadMenu(context, thread);
                       },
-                    );
-                  }
+                    ),
+                  );
                 },
-              ),
-            ),
-          ],
+              );
+            }
+          },
         ),
       ),
       floatingActionButton: FloatingActionButton(
@@ -179,11 +241,11 @@ class _ForumPageState extends State<ForumPage> {
                           return null;
                         },
                       ),
-                      SizedBox(height: 20), // Adding space between fields
+                      const SizedBox(height: 20),
                       TextFormField(
                         controller: _contentController,
-                        maxLines: null, // Allowing multiline
-                        keyboardType: TextInputType.multiline, // Enabling multiline keyboard
+                        maxLines: null,
+                        keyboardType: TextInputType.multiline,
                         decoration: const InputDecoration(labelText: 'Content'),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
