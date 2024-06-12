@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:simaskuli/pages/intro/login_page.dart';
 import 'package:simaskuli/pages/intro/splash_screen.dart';
 
 void main() {
@@ -19,7 +18,7 @@ class MainApp extends StatelessWidget {
         // scaffoldBackgroundColor: Color.fromARGB(255, 240, 248, 255),
       ),
       debugShowCheckedModeBanner: false,
-      home: SplashScreen(),
+      home: const SplashScreen(),
     );
   }
 }

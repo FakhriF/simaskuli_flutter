@@ -19,7 +19,8 @@ class User {
       name: json['name'],
       email: json['email'],
       role: json['role'],
-      profileUrl: json['profile_url'],
+      profileUrl: json['profile_url'] ??
+          "https://cdn.picrew.me/shareImg/org/202404/1904634_70voI7cp.png",
     );
   }
 }
