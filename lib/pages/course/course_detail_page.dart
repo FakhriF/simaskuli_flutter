@@ -86,6 +86,23 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.course.title),
+        actions: [
+          if (_currentUserId != null)
+            IconButton(
+              icon: Icon(Icons.book),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => StudentGradeBook(
+                      courseId: widget.course.id,
+                      userId: _currentUserId!,
+                    ),
+                  ),
+                );
+              },
+            ),
+        ],
       ),
       body: SafeArea(
         child: Padding(
@@ -160,61 +177,19 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
           ),
         ),
       ),
-      floatingActionButton: Stack(
-        children: [
-          if (_currentUserId == widget.course.userId)
-            Positioned(
-              bottom: 16.0,
-              right: 16.0,
-              child: FloatingActionButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CourseUpdatePage(course: widget.course),
-                    ),
-                  );
-                },
-                child: Icon(Icons.edit),
-              ),
-            ),
-          Positioned(
-            bottom: 16.0,
-            right: _currentUserId == widget.course.userId ? 80.0 : 16.0,
-            child: FloatingActionButton(
+      floatingActionButton: _currentUserId == widget.course.userId
+          ? FloatingActionButton(
               onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => StudentGradeBook(
-                      courseId: widget.course.id,
-                      userId: _currentUserId!,
-                    ),
+                    builder: (context) => CourseUpdatePage(course: widget.course),
                   ),
                 );
               },
-              child: Icon(Icons.book),
-            ),
-          ),
-          // Positioned(
-          //   bottom: 16.0,
-          //   left: 16.0,
-          //   child: FloatingActionButton(
-          //     onPressed: () {
-          //       Navigator.push(
-          //         context,
-          //         MaterialPageRoute(
-          //           builder: (context) => MapsPage(
-          //             courseId: widget.course.id,
-          //           ),
-          //         ),
-          //       );
-          //     },
-          //     child: Icon(Icons.map),
-          //   ),
-          // ),
-        ],
-      ),
+              child: Icon(Icons.edit),
+            )
+          : null,
     );
   }
 }
