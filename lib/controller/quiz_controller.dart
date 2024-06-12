@@ -108,7 +108,7 @@ class QuizController {
       }
     } catch (e) {
       print('Exception caught: $e');
-      throw Exception('Failed to delete course');
+      throw Exception('Failed to delete quiz');
     }
   }
 }

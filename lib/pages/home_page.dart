@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simaskuli/controller/questions_controller.dart';
 import 'package:simaskuli/models/user.dart';
 import 'package:simaskuli/models/quiz.dart';
-//import 'package:simaskuli/controller/quiz_controller.dart';
+import 'package:simaskuli/controller/quiz_controller.dart';
 import 'package:simaskuli/pages/course/quiz/question_page.dart';
 
 import 'package:simaskuli/pages/forum/forum_page.dart';
@@ -126,6 +126,8 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   late Future<List<Quiz>> _quizzesFuture;
   final QuestionsController _questionsController = QuestionsController();
+  final QuizController _quizController = QuizController();
+  late List<Quiz> _quizzes;
 
   @override
   void initState() {
@@ -134,7 +136,9 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Future<List<Quiz>> _fetchQuizzes() async {
-    return await _questionsController.getQuiz();
+    _quizzes = await _questionsController.getQuiz();
+    return _quizzes;
+    // return await _questionsController.getQuiz();
   }
 
   static List<String> greetings = [
@@ -162,8 +166,20 @@ class _DashboardPageState extends State<DashboardPage> {
     // Handle edit quiz action
   }
 
-  void _deleteQuiz(int quizId) {
-    // Handle delete quiz action
+  void _deleteQuiz(int quizId) async {
+    try {
+      await _quizController.deleteQuiz(quizId);
+      setState(() {
+        _quizzes.removeWhere((quiz) => quiz.id == quizId);
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Quiz deleted')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to delete quiz: $e')),
+      );
+    }
   }
 
   @override
