@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-//import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simaskuli/controller/questions_controller.dart';
 import 'package:simaskuli/models/user.dart';
 import 'package:simaskuli/models/quiz.dart';
 import 'package:simaskuli/controller/quiz_controller.dart';
+import 'package:simaskuli/pages/course/quiz/question_create_page.dart';
 import 'package:simaskuli/pages/course/quiz/question_page.dart';
 import 'package:simaskuli/pages/course/quiz/quiz_edit_page.dart';
 
@@ -138,7 +138,7 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Future<List<Quiz>> _fetchQuizzes() async {
-    _quizzes = await _questionsController.getQuiz();
+    _quizzes = await _quizController.getQuiz();
     return _quizzes;
     // return await _questionsController.getQuiz();
   }
@@ -162,6 +162,22 @@ class _DashboardPageState extends State<DashboardPage> {
 
   void _addQuestion(int quizId) {
     // Handle add question action
+    try {
+      if (quizId != null) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => QuestionsCreatePage(
+              quizId: quizId,
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to edit quiz: $e')),
+      );
+    }
   }
 
   void _editQuiz(Quiz quiz) async {
