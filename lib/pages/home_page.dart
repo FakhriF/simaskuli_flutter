@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simaskuli/controller/questions_controller.dart';
 import 'package:simaskuli/models/user.dart';
 import 'package:simaskuli/models/quiz.dart';
-//import 'package:simaskuli/controller/quiz_controller.dart';
+// import 'package:simaskuli/controller/quiz_controller.dart';
 import 'package:simaskuli/pages/course/quiz/question_page.dart';
 
 import 'package:simaskuli/pages/forum/forum_page.dart';
@@ -154,6 +154,18 @@ class _DashboardPageState extends State<DashboardPage> {
     }
   }
 
+  void _addQuestion(int quizId) {
+    // Handle add question action
+  }
+
+  void _editQuiz(int quizId) {
+    // Handle edit quiz action
+  }
+
+  void _deleteQuiz(int quizId) {
+    // Handle delete quiz action
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -225,6 +237,9 @@ class _DashboardPageState extends State<DashboardPage> {
                         ),
                       );
                     },
+                    onAddQuestion: _addQuestion,
+                    onEditQuiz: _editQuiz,
+                    onDeleteQuiz: _deleteQuiz,
                   );
                 },
               ),
