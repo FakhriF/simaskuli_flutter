@@ -19,6 +19,7 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController passwordController = TextEditingController();
 
   bool _isDisabled = false;
+  bool obsecurePass = true;
 
   String errorMessage = '';
 
@@ -62,6 +63,13 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       // resizeToAvoidBottomInset: false,
@@ -86,8 +94,8 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 16.0),
                     const Text(
                       'Log in to\nSimaskuli',
-                      style:
-                          TextStyle(fontSize: 28.0, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                          fontSize: 28.0, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 16.0),
                     Container(
@@ -112,6 +120,7 @@ class _LoginPageState extends State<LoginPage> {
                           borderRadius: BorderRadius.circular(10.0),
                         ),
                       ),
+                      keyboardType: TextInputType.emailAddress,
                       onChanged: (value) => setState(() {
                         errorMessage = '';
                       }),
@@ -119,14 +128,26 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 16.0),
                     TextField(
                       controller: passwordController,
-                      obscureText: true,
+                      obscureText: obsecurePass,
                       decoration: InputDecoration(
                         labelText: 'Password',
                         prefixIcon: const Icon(Icons.lock, color: Colors.grey),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10.0),
                         ),
+                        suffixIcon: IconButton(
+                          icon: obsecurePass
+                              ? const Icon(Icons.remove_red_eye)
+                              : const Icon(Icons.remove_red_eye_outlined),
+                          onPressed: () {
+                            setState(() {
+                              obsecurePass = !obsecurePass;
+                            });
+                          },
+                        ),
                       ),
+                      obscuringCharacter: '•',
+                      keyboardType: TextInputType.visiblePassword,
                       onChanged: (value) => setState(() {
                         errorMessage = '';
                       }),
@@ -146,13 +167,23 @@ class _LoginPageState extends State<LoginPage> {
                       onPressed: _isDisabled
                           ? null
                           : () {
-                              setState(() {
-                                _isDisabled = true;
-                              });
-                              _completeLogin(
-                                emailController.text,
-                                passwordController.text,
-                              );
+                              if (emailController.text.isEmpty) {
+                                setState(() {
+                                  errorMessage = 'Please enter email';
+                                });
+                              } else if (passwordController.text.isEmpty) {
+                                setState(() {
+                                  errorMessage = 'Please enter password';
+                                });
+                              } else {
+                                setState(() {
+                                  _isDisabled = true;
+                                });
+                                _completeLogin(
+                                  emailController.text,
+                                  passwordController.text,
+                                );
+                              }
                             },
                       child: const Text('Login'),
                     ),

@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:simaskuli/controller/user_auth_controller.dart';
 
-class ChangePasswordPage extends StatelessWidget {
+class ChangePasswordPage extends StatefulWidget {
   ChangePasswordPage({super.key});
 
+  @override
+  State<ChangePasswordPage> createState() => _ChangePasswordPageState();
+}
+
+class _ChangePasswordPageState extends State<ChangePasswordPage> {
   TextEditingController oldPasswordController = TextEditingController();
+
   TextEditingController newPasswordController = TextEditingController();
 
   Future<void> changePassword(BuildContext context) async {
@@ -46,6 +52,9 @@ class ChangePasswordPage extends StatelessWidget {
     }
   }
 
+  bool visibleOldPass = true;
+  bool visibleNewPass = true;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -83,24 +92,52 @@ class ChangePasswordPage extends StatelessWidget {
                   controller: oldPasswordController,
                   decoration: InputDecoration(
                     labelText: 'Your Old Password',
+                    hintText: 'Enter your old password',
                     prefixIcon:
                         const Icon(Icons.password_outlined, color: Colors.grey),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
+                    suffixIcon: IconButton(
+                      icon: visibleOldPass
+                          ? const Icon(Icons.remove_red_eye)
+                          : const Icon(Icons.remove_red_eye_outlined),
+                      onPressed: () {
+                        setState(() {
+                          visibleOldPass = !visibleOldPass;
+                        });
+                      },
+                    ),
                   ),
+                  obscureText: visibleOldPass,
+                  obscuringCharacter: '•',
+                  keyboardType: TextInputType.visiblePassword,
                 ),
                 const SizedBox(height: 16.0),
                 TextField(
                   controller: newPasswordController,
                   decoration: InputDecoration(
                     labelText: 'Your New Password',
+                    hintText: 'Enter your new password',
                     prefixIcon:
                         const Icon(Icons.password_outlined, color: Colors.grey),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
+                    suffixIcon: IconButton(
+                      icon: visibleNewPass
+                          ? const Icon(Icons.remove_red_eye)
+                          : const Icon(Icons.remove_red_eye_outlined),
+                      onPressed: () {
+                        setState(() {
+                          visibleNewPass = !visibleNewPass;
+                        });
+                      },
+                    ),
                   ),
+                  obscureText: visibleNewPass,
+                  obscuringCharacter: '•',
+                  keyboardType: TextInputType.visiblePassword,
                 ),
                 const SizedBox(height: 16.0),
                 Row(
