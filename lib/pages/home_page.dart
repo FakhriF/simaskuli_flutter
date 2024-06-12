@@ -40,8 +40,10 @@ class _HomePageState extends State<HomePage> {
       final email = prefs.getString('email');
       final role = prefs.getString('role');
       final profileUrl = prefs.getString('profile_url');
+      final birthDate = prefs.getString('birth_date');
 
-      print('User Data Retrieved: $userId, $user, $email, $role, $profileUrl');
+      print(
+          'User Data Retrieved: $userId, $user, $email, $role, $profileUrl, $birthDate');
 
       return User(
         id: userId ?? 0,
@@ -50,6 +52,7 @@ class _HomePageState extends State<HomePage> {
         role: role ?? '',
         profileUrl: profileUrl ??
             "https://cdn.picrew.me/shareImg/org/202404/1904634_70voI7cp.png",
+        birthDate: birthDate ?? '',
       );
     } catch (e) {
       print('Error retrieving user data: $e');
@@ -60,6 +63,7 @@ class _HomePageState extends State<HomePage> {
         role: '',
         profileUrl:
             "https://cdn.picrew.me/shareImg/org/202404/1904634_70voI7cp.png",
+        birthDate: '',
       );
     }
   }
@@ -68,8 +72,8 @@ class _HomePageState extends State<HomePage> {
     final user = await getUserData();
     final dashboardPage = DashboardPage(userData: user);
     final otherPages = [
-      const CourseSelectionPage(),
-      const ForumPage(),
+      const CoursePage(), //TODO: Ubah ini menjadi halaman kursus
+      const ForumPage(), //TODO: Ubah ini menjadi halaman forum
       ProfilePage(userData: user),
     ];
     setState(() {

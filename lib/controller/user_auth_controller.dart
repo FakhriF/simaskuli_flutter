@@ -30,6 +30,7 @@ Future<User> loadUserData() async {
     await prefs.setString('email', user.email);
     await prefs.setString('profile_url', user.profileUrl);
     await prefs.setString('role', user.role);
+    await prefs.setString('birth_date', user.birthDate);
 
     return user;
   } else {
@@ -40,6 +41,7 @@ Future<User> loadUserData() async {
 Future<void> registerUser(String name, String email, String password,
     String role, String birthDate, BuildContext context) async {
   showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (context) => const AlertDialog(
             content: Row(
@@ -64,8 +66,6 @@ Future<void> registerUser(String name, String email, String password,
         'birthDate': birthDate
       }));
 
-  Navigator.of(context).pop();
-
   if (res.statusCode == 201) {
     print(res.statusCode);
     print(res.body);
@@ -76,10 +76,13 @@ Future<void> registerUser(String name, String email, String password,
     await prefs.setString('access_token', responseData['access_token']);
 
     await loadUserData();
+    Navigator.of(context).pop();
 
     Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (context) => const HomePage()));
   } else if (res.statusCode == 500) {
+    Navigator.of(context).pop();
+
     final responseData = json.decode(res.body);
     final errorMessage = responseData['message'];
 
@@ -158,6 +161,66 @@ Future<bool> changePasswordController(
         borderRadius: BorderRadius.circular(10.0),
       ),
       content: const Text("Password changed successfully"),
+    ));
+    return true;
+  } else if (res.statusCode == 401) {
+    final response = json.decode(res.body);
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      content: Text(response['message']),
+    ));
+    return false;
+  } else {
+    throw Exception('Failed to load user data');
+  }
+}
+
+Future<bool> editUserProfile(
+    String name, String picLink, String birthDate, BuildContext context) async {
+  showDialog(
+      context: context,
+      builder: (context) => const AlertDialog(
+            content: Row(
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(width: 16),
+                Text("Changing Your Profile..."),
+              ],
+            ),
+          ));
+
+  const endpoint = 'https://simaskuli-api.vercel.app/api/api/user';
+  final token = await getToken();
+  final res = await http.put(
+    Uri.parse(endpoint),
+    headers: <String, String>{
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
+    body: jsonEncode(<String, String>{
+      'name': name,
+      'birthDate': birthDate,
+      'profile_url': picLink
+    }),
+  );
+
+  Navigator.of(context).pop();
+  if (res.statusCode == 200) {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    await prefs.setString('userName', name);
+    await prefs.setString('profile_url', picLink);
+    await prefs.setString('birth_date', birthDate);
+
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      content: const Text("Profile changed successfully"),
     ));
     return true;
   } else if (res.statusCode == 401) {
