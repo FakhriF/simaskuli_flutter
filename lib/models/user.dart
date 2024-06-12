@@ -4,6 +4,7 @@ class User {
   final String email;
   final String role;
   final String profileUrl;
+  final String birthDate;
 
   User({
     required this.id,
@@ -11,6 +12,7 @@ class User {
     required this.email,
     required this.role,
     required this.profileUrl,
+    required this.birthDate,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -20,7 +22,8 @@ class User {
       email: json['email'],
       role: json['role'],
       profileUrl: json['profile_url'] ??
-          "https://cdn.picrew.me/shareImg/org/202404/1904634_70voI7cp.png",
+          "https://cdn150.picsart.com/upscale-245339439045212.png",
+      birthDate: json['birthDate'],
     );
   }
 }
