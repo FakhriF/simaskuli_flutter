@@ -13,6 +13,7 @@ class QuizQuestionsPage extends StatefulWidget {
 class _QuizQuestionsPageState extends State<QuizQuestionsPage> {
   late Future<List<Questions>> _questionsFuture;
   final QuestionsController _questionsController = QuestionsController();
+  Map<int, String> _selectedAnswers = {};
 
   @override
   void initState() {
@@ -28,7 +29,7 @@ class _QuizQuestionsPageState extends State<QuizQuestionsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Quiz Questions'),
+        title: Text('Quiz Questions'),
       ),
       body: FutureBuilder<List<Questions>>(
         future: _questionsFuture,
@@ -56,12 +57,46 @@ class _QuizQuestionsPageState extends State<QuizQuestionsPage> {
                       Text(question.question_text,
                           style: const TextStyle(fontWeight: FontWeight.bold)),
                       const SizedBox(height: 8),
-                      Text('1. ${question.option1}'),
-                      Text('2. ${question.option2}'),
-                      Text('3. ${question.option3}'),
-                      Text('4. ${question.option4}'),
-                      // Optionally, you can display the correct answer
-                      // Text('Correct answer: ${question.correct_answer}', style: TextStyle(color: Colors.green)),
+                      RadioListTile<String>(
+                        title: Text(question.option1),
+                        value: question.option1,
+                        groupValue: _selectedAnswers[question.id],
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedAnswers[question.id] = value!;
+                          });
+                        },
+                      ),
+                      RadioListTile<String>(
+                        title: Text(question.option2),
+                        value: question.option2,
+                        groupValue: _selectedAnswers[question.id],
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedAnswers[question.id] = value!;
+                          });
+                        },
+                      ),
+                      RadioListTile<String>(
+                        title: Text(question.option3),
+                        value: question.option3,
+                        groupValue: _selectedAnswers[question.id],
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedAnswers[question.id] = value!;
+                          });
+                        },
+                      ),
+                      RadioListTile<String>(
+                        title: Text(question.option4),
+                        value: question.option4,
+                        groupValue: _selectedAnswers[question.id],
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedAnswers[question.id] = value!;
+                          });
+                        },
+                      ),
                     ],
                   ),
                 ),

@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:simaskuli/models/questions.dart';
 import 'package:simaskuli/models/quiz.dart';
 
-class QuestionsController {
+class QuizController {
   final String quizApiUrl = "https://simaskuli-api.vercel.app/api/api/quiz";
 
   // Fetch all quizzes
@@ -22,6 +22,34 @@ class QuestionsController {
     } catch (e) {
       print('Exception caught: $e');
       throw Exception('Failed to load quizzes');
+    }
+  }
+
+  Future<Quiz> createQuiz(Quiz quiz) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$quizApiUrl/add'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, dynamic>{
+          'title': quiz.title,
+          'description': quiz.description,
+          'dueDate': quiz.dueDate,
+          'course_id': quiz.courseId,
+        }),
+      );
+
+      if (response.statusCode == 201) {
+        return Quiz.fromJson(json.decode(response.body));
+      } else {
+        print('Failed to create course: ${response.statusCode}');
+        print('Response body: ${response.body}');
+        throw Exception('Failed to create course');
+      }
+    } catch (e) {
+      print('Exception caught: $e');
+      throw Exception('Failed to create course');
     }
   }
 
