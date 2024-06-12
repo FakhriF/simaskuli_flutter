@@ -55,22 +55,23 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
 
   Future<bool> _showConfirmationDialog() async {
     return await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Confirm Deletion'),
-        content: Text('Are you sure you want to delete this course?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: Text('Cancel'),
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('Confirm Deletion'),
+            content: Text('Are you sure you want to delete this course?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: Text('Delete'),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: Text('Delete'),
-          ),
-        ],
-      ),
-    ) ?? false;
+        ) ??
+        false;
   }
 
   @override
@@ -87,21 +88,35 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
             children: [
               Text(
                 widget.course.title,
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.blue),
+                style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue),
               ),
               const SizedBox(height: 8.0),
               FutureBuilder<User?>(
                 future: _getUserById(widget.course.userId),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Text('Loading lecturer...', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey[700]));
+                    return Text('Loading lecturer...',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey[700]));
                   } else if (snapshot.hasError) {
-                    return Text('Error loading lecturer', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red));
+                    return Text('Error loading lecturer',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, color: Colors.red));
                   } else if (!snapshot.hasData) {
-                    return Text('Lecturer not found', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red));
+                    return Text('Lecturer not found',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, color: Colors.red));
                   } else {
                     final user = snapshot.data!;
-                    return Text('Lecturer: ${user.name}', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[700]));
+                    return Text('Lecturer: ${user.name}',
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey[700]));
                   }
                 },
               ),
@@ -120,6 +135,35 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
               Text(
                 'Learning Outcomes: ${widget.course.learningOutcomes}',
                 style: TextStyle(fontSize: 16, color: Colors.grey[800]),
+              ),
+              const SizedBox(height: 16.0),
+              Center(
+                child: TextButton(
+                  onPressed: () {
+                    // Tambahkan aksi yang ingin dilakukan saat tombol ditekan di sini
+                  },
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.blue),
+                    shape: MaterialStateProperty.all(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        side: BorderSide(color: Colors.blue),
+                      ),
+                    ),
+                  ),
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 1, horizontal: 10),
+                    child: Text(
+                      'Create Quiz',
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
