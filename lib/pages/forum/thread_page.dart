@@ -47,7 +47,8 @@ class _ThreadPageState extends State<ThreadPage> {
 
   Future<Thread> _fetchThread() async {
     final response = await http.get(
-      Uri.parse('https://simaskuli-api.vercel.app/api/api/forum/${widget.thread.id}'),
+      Uri.parse(
+          'https://simaskuli-api.vercel.app/api/api/forum/${widget.thread.id}'),
     );
     if (response.statusCode == 200) {
       final jsonData = json.decode(response.body);
@@ -58,7 +59,9 @@ class _ThreadPageState extends State<ThreadPage> {
   }
 
   Future<List<ThreadPost>> fetchReplies() async {
-    final response = await http.get(Uri.parse('https://simaskuli-api.vercel.app/api/api/forum/${widget.thread.id}/posts'));
+    final response = await http.get(Uri.parse(
+        'https://simaskuli-api.vercel.app/api/api/forum/${widget.thread
+            .id}/posts'));
 
     if (response.statusCode == 200) {
       try {
@@ -71,7 +74,8 @@ class _ThreadPageState extends State<ThreadPage> {
         throw Exception('Failed to parse replies');
       }
     } else {
-      throw Exception('Failed to load replies. Status code: ${response.statusCode}');
+      throw Exception(
+          'Failed to load replies. Status code: ${response.statusCode}');
     }
   }
 
@@ -80,7 +84,9 @@ class _ThreadPageState extends State<ThreadPage> {
     if (content.isNotEmpty) {
       try {
         final response = await http.post(
-          Uri.parse('https://simaskuli-api.vercel.app/api/api/forum/${widget.thread.id}/posts'),
+          Uri.parse(
+              'https://simaskuli-api.vercel.app/api/api/forum/${widget.thread
+                  .id}/posts'),
           body: json.encode({
             'content': content,
             'thread_id': widget.thread.id,
@@ -130,7 +136,7 @@ class _ThreadPageState extends State<ThreadPage> {
                 maxLines: null,
                 decoration: InputDecoration(
                   labelText: 'Content',
-                ),              ),
+                ),),
             ],
           ),
           actions: [
@@ -143,14 +149,16 @@ class _ThreadPageState extends State<ThreadPage> {
             ElevatedButton(
               onPressed: () {
                 final String updatedTitle = _editTitleController.text.trim();
-                final String updatedContent = _editContentController.text.trim();
+                final String updatedContent = _editContentController.text
+                    .trim();
                 if (updatedTitle.isNotEmpty && updatedContent.isNotEmpty) {
                   _updateThread(updatedTitle, updatedContent);
                   Navigator.pop(context);
                 }
               },
               child: Text('Save'),
-            ),          ],
+            ),
+          ],
         );
       },
     );
@@ -159,7 +167,9 @@ class _ThreadPageState extends State<ThreadPage> {
   Future<void> _updateThread(String title, String content) async {
     try {
       final response = await http.put(
-        Uri.parse('https://simaskuli-api.vercel.app/api/api/forum/${widget.thread.id}'),
+        Uri.parse(
+            'https://simaskuli-api.vercel.app/api/api/forum/${widget.thread
+                .id}'),
         body: json.encode({
           'title': title,
           'content': content,
@@ -184,7 +194,8 @@ class _ThreadPageState extends State<ThreadPage> {
 
   void editReply(ThreadPost reply) {
     _replyBeingEdited = reply; // Store the reply being edited
-    _editedContent = reply.content; // Initialize the edited content with the current reply content
+    _editedContent = reply
+        .content; // Initialize the edited content with the current reply content
 
     showDialog(
       context: context,
@@ -227,7 +238,9 @@ class _ThreadPageState extends State<ThreadPage> {
     if (_editedContent != null && _replyBeingEdited != null) {
       try {
         final response = await http.put(
-          Uri.parse('https://simaskuli-api.vercel.app/api/api/forum/${widget.thread.id}/posts/${_replyBeingEdited!.id}'),
+          Uri.parse(
+              'https://simaskuli-api.vercel.app/api/api/forum/${widget.thread
+                  .id}/posts/${_replyBeingEdited!.id}'),
           headers: {'Content-Type': 'application/json'},
           body: json.encode({'content': _editedContent}),
         );
@@ -235,7 +248,8 @@ class _ThreadPageState extends State<ThreadPage> {
         if (response.statusCode == 200) {
           debugPrint('Reply updated successfully');
           setState(() {
-            final updatedIndex = _replies.indexWhere((reply) => reply.id == _replyBeingEdited!.id);
+            final updatedIndex = _replies.indexWhere((reply) =>
+            reply.id == _replyBeingEdited!.id);
             _replies[updatedIndex].content = _editedContent!;
           });
         } else {
@@ -255,7 +269,9 @@ class _ThreadPageState extends State<ThreadPage> {
   Future<void> deleteThread() async {
     try {
       final response = await http.delete(
-        Uri.parse('https://simaskuli-api.vercel.app/api/api/forum/${widget.thread.id}'),
+        Uri.parse(
+            'https://simaskuli-api.vercel.app/api/api/forum/${widget.thread
+                .id}'),
       );
       if (response.statusCode == 200) {
         debugPrint('Thread deleted successfully');
@@ -274,7 +290,9 @@ class _ThreadPageState extends State<ThreadPage> {
     if (shouldDelete) {
       try {
         final response = await http.delete(
-          Uri.parse('https://simaskuli-api.vercel.app/api/api/forum/${widget.thread.id}/posts/${reply.id}'),
+          Uri.parse(
+              'https://simaskuli-api.vercel.app/api/api/forum/${widget.thread
+                  .id}/posts/${reply.id}'),
         );
 
         if (response.statusCode == 200 || response.statusCode == 204) {
@@ -332,6 +350,7 @@ class _ThreadPageState extends State<ThreadPage> {
       return '${(difference.inDays / 365).floor()} years ago';
     }
   }
+
   //
   // void editReply(ThreadPost reply) {
   //   // Implement edit reply functionality
@@ -370,16 +389,17 @@ class _ThreadPageState extends State<ThreadPage> {
                     deleteReply(reply);
                   },
                 ),
-              ] else ...[
-                ListTile(
-                  leading: Icon(Icons.reply, color: Colors.blue),
-                  title: Text('Reply'),
-                  onTap: () {
-                    Navigator.pop(context);
-                    // replyToPost(reply);
-                  },
-                ),
-              ],
+              ] else
+                ...[
+                  ListTile(
+                    leading: Icon(Icons.reply, color: Colors.blue),
+                    title: Text('Reply'),
+                    onTap: () {
+                      Navigator.pop(context);
+                      // replyToPost(reply);
+                    },
+                  ),
+                ],
             ],
           ),
         );
@@ -404,7 +424,8 @@ class _ThreadPageState extends State<ThreadPage> {
                   deleteThread();
                 }
               },
-              itemBuilder: (BuildContext context) => [
+              itemBuilder: (BuildContext context) =>
+              [
                 PopupMenuItem<String>(
                   value: 'edit',
                   child: Text('Edit'),
@@ -417,122 +438,141 @@ class _ThreadPageState extends State<ThreadPage> {
             ),
         ],
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Original post
-                  ListTile(
-                    leading: CircleAvatar(
-                      backgroundImage: NetworkImage(widget.thread.user.profileUrl),
-                    ),
-                    title: Text(widget.thread.user.name),
-                    subtitle: Text(formatTimeDifference(widget.thread.createdAt)),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Text(widget.thread.content),
-                  ),
-                  // Replies
-                  FutureBuilder<List<ThreadPost>>(
-                    future: fetchReplies(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Center(child: CircularProgressIndicator());
-                      } else if (snapshot.hasError) {
-                        return Center(child: Text('Failed to load replies: ${snapshot.error}'));
-                      } else {
-                        final replies = snapshot.data!;
-                        return ListView.builder(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          itemCount: replies.length,
-                          itemBuilder: (context, index) {
-                            final reply = replies[index];
-                            final isCurrentUser = reply.userId == currentUser;
-                            return ListTile(
-                              leading: CircleAvatar(
-                                backgroundImage: NetworkImage(reply.user.profileUrl),
-                              ),
-                              title: Row(
-                                children: [
-                                  Text(reply.user.name),
-                                  SizedBox(width: 8),
-                                  Expanded(
-                                    child: Text(
-                                      formatTimeDifference(reply.createdAt),
-                                      style: TextStyle(fontSize: 12),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                  PopupMenuButton<String>(
-                                    icon: Icon(Icons.more_vert, size: 16),
-                                    onSelected: (String value) {
-                                      if (value == 'edit') {
-                                        editReply(reply);
-                                      } else if (value == 'delete') {
-                                        deleteReply(reply);
-                                      }
-                                    },
-                                    itemBuilder: (BuildContext context) => [
-                                      if (isCurrentUser) ...[
-                                        PopupMenuItem<String>(
-                                          value: 'edit',
-                                          child: Text('Edit'),
-                                        ),
-                                        PopupMenuItem<String>(
-                                          value: 'delete',
-                                          child: Text('Delete'),
-                                        ),
-                                      ],
-                                    ],
-                                  ),
-                                ],
-                              ),
-                              subtitle: Text(reply.content),
-                            );
-                          },
-                        );
-                      }
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Container(
-            padding: EdgeInsets.all(8.0),
-            decoration: BoxDecoration(
-              border: Border(top: BorderSide(color: Colors.grey[300]!)),
-            ),
-            child: Row(
+      body: FutureBuilder<Thread>(
+        future: _threadFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(
+                child: Text('Failed to load thread: ${snapshot.error}'));
+          } else {
+            final thread = snapshot.data!;
+            return Column(
               children: [
                 Expanded(
-                  child: TextField(
-                    controller: _replyController,
-                    decoration: InputDecoration(
-                      hintText: 'Post a new reply...',
-                      border: InputBorder.none,
-                    ),
-                    onTap: () {
-                      setState(() {
-                        _isReplying = true;
-                      });
-                    },
+                  child: ListView(
+                    padding: EdgeInsets.zero,
+                    children: [
+                      ListTile(
+                        leading: CircleAvatar(
+                          backgroundImage: NetworkImage(thread.user.profileUrl),
+                        ),
+                        title: Text(thread.user.name),
+                        subtitle: Text(formatTimeDifference(thread.createdAt)),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text(thread.content),
+                      ),
+                      FutureBuilder<List<ThreadPost>>(
+                        future: fetchReplies(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          } else if (snapshot.hasError) {
+                            return Center(child: Text(
+                                'Failed to load replies: ${snapshot.error}'));
+                          } else {
+                            final replies = snapshot.data!;
+                            return ListView.separated(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: replies.length,
+                              separatorBuilder: (context,
+                                  index) => const Divider(),
+                              itemBuilder: (context, index) {
+                                final reply = replies[index];
+                                final isCurrentUser = reply.userId ==
+                                    currentUser;
+                                return ListTile(
+                                  leading: CircleAvatar(
+                                    backgroundImage: NetworkImage(
+                                        reply.user.profileUrl),
+                                  ),
+                                  title: Row(
+                                    children: [
+                                      Text(reply.user.name),
+                                      const SizedBox(width: 8),
+                                      Expanded(
+                                        child: Text(
+                                          formatTimeDifference(reply.createdAt),
+                                          style: const TextStyle(fontSize: 12),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                      if (isCurrentUser)
+                                        PopupMenuButton<String>(
+                                          icon: const Icon(
+                                              Icons.more_vert, size: 16),
+                                          onSelected: (String value) {
+                                            if (value == 'edit') {
+                                              editReply(reply);
+                                            } else if (value == 'delete') {
+                                              deleteReply(reply);
+                                            }
+                                          },
+                                          itemBuilder: (BuildContext context) =>
+                                          [
+                                            const PopupMenuItem<String>(
+                                              value: 'edit',
+                                              child: Text('Edit'),
+                                            ),
+                                            const PopupMenuItem<String>(
+                                              value: 'delete',
+                                              child: Text('Delete'),
+                                            ),
+                                          ],
+                                        ),
+                                    ],
+                                  ),
+                                  subtitle: Text(reply.content),
+                                );
+                              },
+                            );
+                          }
+                        },
+                      ),
+                    ],
                   ),
                 ),
-                if (_isReplying)
-                  IconButton(
-                    icon: Icon(Icons.send),
-                    onPressed: postReply,
+                Container(
+                  padding: const EdgeInsets.all(8.0),
+                  decoration: BoxDecoration(
+                    border: Border(top: BorderSide(color: Colors.grey[300]!)),
                   ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _replyController,
+                          decoration: const InputDecoration(
+                            hintText: 'Post a new reply...',
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.symmetric(
+                                horizontal: 16.0),
+                          ),
+                          onTap: () {
+                            setState(() {
+                              _isReplying = true;
+                            });
+                          },
+                        ),
+                      ),
+                      if (_isReplying)
+                        IconButton(
+                          icon: const Icon(Icons.send),
+                          onPressed: postReply,
+                        ),
+                    ],
+                  ),
+                ),
               ],
-            ),
-          ),
-        ],
+            );
+          }
+        },
       ),
     );
   }
