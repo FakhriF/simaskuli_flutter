@@ -29,8 +29,8 @@ class RegisterPage extends StatelessWidget {
                     const SizedBox(height: 16.0),
                     const Text(
                       'Choose Your\nRole',
-                      style:
-                          TextStyle(fontSize: 28.0, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                          fontSize: 28.0, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 16.0),
                     Container(
@@ -158,6 +158,18 @@ class _RegisterFormState extends State<RegisterForm> {
   var passwordController = TextEditingController();
   var confirmPasswordController = TextEditingController();
 
+  List obsecurePass = [true, true]; // 0 = password, 1 = confirmPassword
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    birthController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    confirmPasswordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -247,30 +259,55 @@ class _RegisterFormState extends State<RegisterForm> {
                           borderRadius: BorderRadius.circular(10.0),
                         ),
                       ),
+                      keyboardType: TextInputType.emailAddress,
                     ),
                     const SizedBox(height: 16.0),
                     TextField(
                       controller: passwordController,
-                      obscureText: true,
+                      obscureText: obsecurePass[0],
                       decoration: InputDecoration(
                         labelText: 'Password',
                         prefixIcon: const Icon(Icons.lock_outline_rounded),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10.0),
                         ),
+                        suffixIcon: IconButton(
+                          icon: obsecurePass[0]
+                              ? const Icon(Icons.remove_red_eye)
+                              : const Icon(Icons.remove_red_eye_outlined),
+                          onPressed: () {
+                            setState(() {
+                              obsecurePass[0] = !obsecurePass[0];
+                            });
+                          },
+                        ),
                       ),
+                      obscuringCharacter: '•',
+                      keyboardType: TextInputType.visiblePassword,
                     ),
                     const SizedBox(height: 16.0),
                     TextField(
                       controller: confirmPasswordController,
-                      obscureText: true,
+                      obscureText: obsecurePass[1],
                       decoration: InputDecoration(
                         labelText: 'Re-Enter Password',
                         prefixIcon: const Icon(Icons.lock_outline_rounded),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10.0),
                         ),
+                        suffixIcon: IconButton(
+                          icon: obsecurePass[1]
+                              ? const Icon(Icons.remove_red_eye)
+                              : const Icon(Icons.remove_red_eye_outlined),
+                          onPressed: () {
+                            setState(() {
+                              obsecurePass[1] = !obsecurePass[1];
+                            });
+                          },
+                        ),
                       ),
+                      obscuringCharacter: '•',
+                      keyboardType: TextInputType.visiblePassword,
                     ),
                     const SizedBox(height: 32.0),
                     ElevatedButton(
@@ -290,12 +327,13 @@ class _RegisterFormState extends State<RegisterForm> {
                           );
                           return;
                         } else if (passwordController.text.length < 8) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Password must be at least 8 characters'),
-                              ),
-                            );
-                            return;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                  'Password must be at least 8 characters'),
+                            ),
+                          );
+                          return;
                         } else {
                           if (passwordController.text !=
                               confirmPasswordController.text) {

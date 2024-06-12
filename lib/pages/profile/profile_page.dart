@@ -102,6 +102,7 @@ class ProfilePage extends StatelessWidget {
                                 child: const Text("OK"),
                                 onPressed: () async {
                                   showDialog(
+                                      barrierDismissible: false,
                                       context: context,
                                       builder: (context) => const AlertDialog(
                                             content: Row(
