@@ -111,6 +111,19 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                   }
                 },
               ),
+              const SizedBox(height: 8.0),
+              if (_currentUserId != widget.course.userId)
+                _isEnrolled
+                  ? ElevatedButton.icon(
+                      onPressed: _unenroll,
+                      icon: Icon(Icons.cancel),
+                      label: Text('Unenroll'),
+                    )
+                  : ElevatedButton.icon(
+                      onPressed: _enroll,
+                      icon: Icon(Icons.add),
+                      label: Text('Enroll'),
+                    ),
               const SizedBox(height: 16.0),
               if (widget.course.imageUrl.isNotEmpty)
                 Image.network(
@@ -127,17 +140,6 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                 'Learning Outcomes: ${widget.course.learningOutcomes}',
                 style: TextStyle(fontSize: 16, color: Colors.grey[800]),
               ),
-              const SizedBox(height: 16.0),
-              if (_currentUserId != widget.course.userId)
-                _isEnrolled
-                  ? ElevatedButton(
-                      onPressed: _unenroll,
-                      child: Text('Unenroll'),
-                    )
-                  : ElevatedButton(
-                      onPressed: _enroll,
-                      child: Text('Enroll'),
-                    ),
             ],
           ),
         ),
