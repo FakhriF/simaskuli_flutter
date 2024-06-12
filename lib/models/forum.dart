@@ -31,3 +31,13 @@ class Thread {
     );
   }
 }
+
+class PaginatedThreads {
+  final List<Thread> items;
+  final Map<String, dynamic> meta;
+
+  PaginatedThreads({
+    required this.items,
+    required this.meta,
+  });
+}
