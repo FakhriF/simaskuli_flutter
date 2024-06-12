@@ -76,7 +76,7 @@ class _ForumPageState extends State<ForumPage> {
     if (response.statusCode == 200) {
       debugPrint('Thread deleted successfully');
       setState(() {
-        threads = getThread();
+        threads = threads.then((list) => list.where((thread) => thread.id != threadId).toList());
       });
     } else {
       throw Exception('Failed to delete thread: ${response.statusCode}');
@@ -117,10 +117,33 @@ class _ForumPageState extends State<ForumPage> {
               if (isCurrentUserThread)
                 ListTile(
                   leading: const Icon(Icons.delete, color: Colors.red),
-                  title: const Text('Delete', style: TextStyle(color: Colors.red),),
+                  title: const Text('Delete', style: TextStyle(color: Colors.red)),
                   onTap: () {
-                    _deleteThread(thread.id);
                     Navigator.pop(context);
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Confirm Deletion'),
+                          content: const Text('Are you sure you want to delete this thread?'),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: const Text('Cancel'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                                _deleteThread(thread.id);
+                              },
+                              child: const Text('Delete'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
                   },
                 ),
             ],
@@ -133,78 +156,62 @@ class _ForumPageState extends State<ForumPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(24),
-              child: const Text(
-                "Forum",
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-            ),
-            Expanded(
-              child: FutureBuilder<List<Thread>>(
-                future: threads,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return Center(child: Text('Error: ${snapshot.error}'));
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return Center(child: Text('No threads found.'));
-                  } else {
-                    List<Thread> threads = snapshot.data!;
-                    return ListView.builder(
-                      itemCount: threads.length,
-                      itemBuilder: (context, index) {
-                        Thread thread = threads[index];
-                        return Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Card(
-                            clipBehavior: Clip.antiAlias,
-                            child: ListTile(
-                              contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 8),
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => ThreadPage(thread: thread),
-                                  ),
-                                );
-                              },
-                              leading: CircleAvatar(
-                                backgroundColor: Colors.blue,
-                                backgroundImage: NetworkImage(thread.user.profileUrl),
-                              ),
-                              title: Text(
-                                thread.title,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              subtitle: Text(
-                                'By ${thread.user.name}, ${formatDate(thread.createdAt)}',
-                                style: TextStyle(
-                                    color: Colors.black.withOpacity(0.6)),
-                              ),
-                              trailing: IconButton(
-                                icon: const Icon(Icons.more_vert),
-                                onPressed: () {
-                                  _showThreadMenu(context, thread);
-                                },
-                              ),
-                            ),
-                          ),
-                        );
+      appBar: AppBar(
+        title: const Text('Forum')
+      ),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          setState(() {
+            threads = getThread();
+          });
+        },
+        child: FutureBuilder<List<Thread>>(
+          future: threads,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return const Center(child: Text('No threads found.'));
+            } else {
+              List<Thread> threads = snapshot.data!;
+              return ListView.separated(
+                itemCount: threads.length,
+                separatorBuilder: (context, index) => const Divider(),
+                itemBuilder: (context, index) {
+                  Thread thread = threads[index];
+                  return ListTile(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ThreadPage(thread: thread),
+                        ),
+                      );
+                    },
+                    leading: CircleAvatar(
+                      backgroundImage: NetworkImage(thread.user.profileUrl),
+                    ),
+                    title: Text(
+                      thread.title,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: Text(
+                      'By ${thread.user.name}, ${formatDate(thread.createdAt)}',
+                      style: TextStyle(color: Colors.black.withOpacity(0.6)),
+                    ),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.more_vert),
+                      onPressed: () {
+                        _showThreadMenu(context, thread);
                       },
-                    );
-                  }
+                    ),
+                  );
                 },
-              ),
-            ),
-          ],
+              );
+            }
+          },
         ),
       ),
       floatingActionButton: FloatingActionButton(
@@ -234,11 +241,11 @@ class _ForumPageState extends State<ForumPage> {
                           return null;
                         },
                       ),
-                      SizedBox(height: 20), // Adding space between fields
+                      const SizedBox(height: 20),
                       TextFormField(
                         controller: _contentController,
-                        maxLines: null, // Allowing multiline
-                        keyboardType: TextInputType.multiline, // Enabling multiline keyboard
+                        maxLines: null,
+                        keyboardType: TextInputType.multiline,
                         decoration: const InputDecoration(labelText: 'Content'),
                         validator: (value) {
                           if (value == null || value.isEmpty) {

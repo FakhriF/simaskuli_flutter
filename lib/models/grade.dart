@@ -1,19 +1,31 @@
 class Grade {
-  final String subject;
-  final int score;
-  final int quiz;
+  final int id;
+  final int studentId;
+  final int quizId;
+  final int courseId;
+  final double grade;
+  final String quizTitle;
+  final String courseTitle;
 
-  const Grade({
-    required this.quiz,
-    required this.subject,
-    required this.score, 
+  Grade({
+    required this.id,
+    required this.studentId,
+    required this.quizId,
+    required this.courseId,
+    required this.grade,
+    required this.quizTitle,
+    required this.courseTitle,
   });
 
   factory Grade.fromJson(Map<String, dynamic> json) {
     return Grade(
-      quiz: json['quiz_id'],
-      subject: json['subject'],
-      score: json['score'],
+      id: json['id'],
+      studentId: json['student_id'],
+      quizId: json['quiz_id'],
+      courseId: json['course_id'],
+      grade: json['grade'].toDouble(),
+      quizTitle: json['quiz_title'],
+      courseTitle: json['course_title'],
     );
   }
 }
