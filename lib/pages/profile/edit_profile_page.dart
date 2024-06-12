@@ -1,4 +1,6 @@
 import "package:flutter/material.dart";
+import "package:intl/intl.dart";
+import "package:simaskuli/controller/user_auth_controller.dart";
 import "package:simaskuli/models/user.dart";
 
 class EditProfilePage extends StatefulWidget {
@@ -13,11 +15,13 @@ class EditProfilePage extends StatefulWidget {
 class _EditProfilePageState extends State<EditProfilePage> {
   TextEditingController nameController = TextEditingController();
   TextEditingController profileUrlController = TextEditingController();
+  TextEditingController birthController = TextEditingController();
 
   @override
   void initState() {
     nameController.text = widget.userData.name;
     profileUrlController.text = widget.userData.profileUrl;
+    birthController.text = widget.userData.birthDate;
     super.initState();
   }
 
@@ -79,7 +83,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 ),
                 const SizedBox(height: 16.0),
                 TextField(
-                  // controller: birthController,
+                  controller: birthController,
                   decoration: InputDecoration(
                     labelText: 'Birth Date',
                     hintText: 'YYYY-MM-DD',
@@ -94,8 +98,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             firstDate: DateTime(1900),
                             lastDate: DateTime(2100));
                         if (datePick != null) {
-                          print(datePick);
-                          // birthController.text = datePick.toString();
+                          final formatter =
+                              DateFormat('yyyy-MM-dd').format(datePick);
+                          birthController.text = formatter.toString();
                         }
                       },
                     ),
@@ -120,7 +125,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue.shade400,
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        editUserProfile(
+                            nameController.text,
+                            profileUrlController.text,
+                            birthController.text,
+                            context);
+                      },
                       child: const Text(
                         'Save',
                         style: TextStyle(color: Colors.white),
