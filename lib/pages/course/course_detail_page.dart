@@ -5,6 +5,8 @@ import 'package:simaskuli/controller/course_controller.dart';
 import 'package:simaskuli/controller/enrollment_controller.dart';
 import 'package:simaskuli/models/user.dart';
 import 'package:simaskuli/pages/course/course_update_page.dart';
+import 'package:simaskuli/pages/course_building_map/course_building_map.dart';
+import 'package:simaskuli/pages/grades/student_gradebook.dart';
 
 class CourseDetailPage extends StatefulWidget {
   final Course course;
@@ -140,23 +142,79 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                 'Learning Outcomes: ${widget.course.learningOutcomes}',
                 style: TextStyle(fontSize: 16, color: Colors.grey[800]),
               ),
+              const SizedBox(height: 16.0), // Add spacing between course details and the button
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MapsPage(
+                        courseId: widget.course.id,
+                      ),
+                    ),
+                  );
+                },
+                child: Text('View Course Building Map'),
+              ),
             ],
           ),
         ),
       ),
-      floatingActionButton: _currentUserId == widget.course.userId
-          ? FloatingActionButton(
+      floatingActionButton: Stack(
+        children: [
+          if (_currentUserId == widget.course.userId)
+            Positioned(
+              bottom: 16.0,
+              right: 16.0,
+              child: FloatingActionButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CourseUpdatePage(course: widget.course),
+                    ),
+                  );
+                },
+                child: Icon(Icons.edit),
+              ),
+            ),
+          Positioned(
+            bottom: 16.0,
+            right: _currentUserId == widget.course.userId ? 80.0 : 16.0,
+            child: FloatingActionButton(
               onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => CourseUpdatePage(course: widget.course),
+                    builder: (context) => StudentGradeBook(
+                      courseId: widget.course.id,
+                      userId: _currentUserId!,
+                    ),
                   ),
                 );
               },
-              child: Icon(Icons.edit),
-            )
-          : null,
+              child: Icon(Icons.book),
+            ),
+          ),
+          // Positioned(
+          //   bottom: 16.0,
+          //   left: 16.0,
+          //   child: FloatingActionButton(
+          //     onPressed: () {
+          //       Navigator.push(
+          //         context,
+          //         MaterialPageRoute(
+          //           builder: (context) => MapsPage(
+          //             courseId: widget.course.id,
+          //           ),
+          //         ),
+          //       );
+          //     },
+          //     child: Icon(Icons.map),
+          //   ),
+          // ),
+        ],
+      ),
     );
   }
 }
