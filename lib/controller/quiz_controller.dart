@@ -92,6 +92,34 @@ class QuizController {
     }
   }
 
+  Future<Quiz> editQuiz(Quiz quiz) async {
+    try {
+      final response = await http.put(
+        Uri.parse('$quizApiUrl/${quiz.id}'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, dynamic>{
+          'title': quiz.title,
+          'description': quiz.description,
+          'dueDate': quiz.dueDate,
+          'course_id': quiz.courseId,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        return Quiz.fromJson(json.decode(response.body));
+      } else {
+        print('Failed to update quiz: ${response.statusCode}');
+        print('Response body: ${response.body}');
+        throw Exception('Failed to update quiz');
+      }
+    } catch (e) {
+      print('Exception caught: $e');
+      throw Exception('Failed to update quiz');
+    }
+  }
+
   Future<void> deleteQuiz(int id) async {
     try {
       final response = await http.delete(

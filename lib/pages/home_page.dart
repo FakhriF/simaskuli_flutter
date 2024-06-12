@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+//import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simaskuli/controller/questions_controller.dart';
 import 'package:simaskuli/models/user.dart';
 import 'package:simaskuli/models/quiz.dart';
 import 'package:simaskuli/controller/quiz_controller.dart';
 import 'package:simaskuli/pages/course/quiz/question_page.dart';
+import 'package:simaskuli/pages/course/quiz/quiz_edit_page.dart';
 
 import 'package:simaskuli/pages/forum/forum_page.dart';
-import 'package:simaskuli/pages/grades/student_gradebook.dart';
+//import 'package:simaskuli/pages/grades/student_gradebook.dart';
 import 'package:simaskuli/pages/profile/profile_page.dart';
 
 import 'package:simaskuli/pages/course/course_page.dart';
@@ -162,8 +164,22 @@ class _DashboardPageState extends State<DashboardPage> {
     // Handle add question action
   }
 
-  void _editQuiz(int quizId) {
-    // Handle edit quiz action
+  void _editQuiz(Quiz quiz) async {
+    try {
+      //final quiz = await _quizController.getQuizById(quizId);
+      if (quiz != null) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => QuizUpdatePage(quiz: quiz),
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to edit quiz: $e')),
+      );
+    }
   }
 
   void _deleteQuiz(int quizId) async {

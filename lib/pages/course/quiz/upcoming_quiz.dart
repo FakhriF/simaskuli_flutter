@@ -6,7 +6,7 @@ import 'package:simaskuli/pages/course/quiz/question_page.dart';
 class UpcomingQuiz extends StatelessWidget {
   final List<Quiz> quizzes;
   final void Function(int quizId) onQuizSelected;
-  final void Function(int quizId) onEditQuiz;
+  final void Function(Quiz quiz) onEditQuiz;
   final void Function(int quizId) onDeleteQuiz;
   final void Function(int quizId) onAddQuestion;
 
@@ -54,7 +54,7 @@ class UpcomingQuiz extends StatelessWidget {
                       ),
                       IconButton(
                         icon: Icon(Icons.edit),
-                        onPressed: () => onEditQuiz(quiz.id),
+                        onPressed: () => onEditQuiz(quiz),
                       ),
                       IconButton(
                         icon: Icon(Icons.delete),
