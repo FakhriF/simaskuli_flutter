@@ -4,7 +4,7 @@ import 'package:simaskuli/controller/questions_controller.dart';
 
 class QuizQuestionsPage extends StatefulWidget {
   final int quizId;
-  const QuizQuestionsPage({Key? key, required this.quizId}) : super(key: key);
+  const QuizQuestionsPage({required this.quizId});
 
   @override
   _QuizQuestionsPageState createState() => _QuizQuestionsPageState();

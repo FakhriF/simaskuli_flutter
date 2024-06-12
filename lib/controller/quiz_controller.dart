@@ -91,4 +91,24 @@ class QuizController {
       throw Exception('Failed to load questions');
     }
   }
+
+  Future<void> deleteQuiz(int id) async {
+    try {
+      final response = await http.delete(
+        Uri.parse('$quizApiUrl/$id'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+
+      if (response.statusCode != 200) {
+        print('Failed to delete quiz: ${response.statusCode}');
+        print('Response body: ${response.body}');
+        throw Exception('Failed to delete quiz');
+      }
+    } catch (e) {
+      print('Exception caught: $e');
+      throw Exception('Failed to delete course');
+    }
+  }
 }
