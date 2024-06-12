@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simaskuli/models/course.dart';
 import 'package:simaskuli/controller/course_controller.dart';
 import 'package:simaskuli/models/user.dart';
+import 'package:simaskuli/pages/course/quiz/quiz_create_page.dart';
 
 class CourseDetailPage extends StatefulWidget {
   final Course course;
@@ -140,7 +141,12 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
               Center(
                 child: TextButton(
                   onPressed: () {
-                    // Tambahkan aksi yang ingin dilakukan saat tombol ditekan di sini
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => QuizCreatePage(courseId: widget.course.id),
+                      ),
+                    );
                   },
                   style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all(Colors.blue),

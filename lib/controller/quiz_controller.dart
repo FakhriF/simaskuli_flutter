@@ -43,13 +43,13 @@ class QuizController {
       if (response.statusCode == 201) {
         return Quiz.fromJson(json.decode(response.body));
       } else {
-        print('Failed to create course: ${response.statusCode}');
+        print('Failed to create quiz: ${response.statusCode}');
         print('Response body: ${response.body}');
-        throw Exception('Failed to create course');
+        throw Exception('Failed to create quiz');
       }
     } catch (e) {
       print('Exception caught: $e');
-      throw Exception('Failed to create course');
+      throw Exception('Failed to create quiz');
     }
   }
 
