@@ -76,7 +76,7 @@ class _ForumPageState extends State<ForumPage> {
     if (response.statusCode == 200) {
       debugPrint('Thread deleted successfully');
       setState(() {
-        threads = getThread();
+        threads = threads.then((list) => list.where((thread) => thread.id != threadId).toList());
       });
     } else {
       throw Exception('Failed to delete thread: ${response.statusCode}');
@@ -117,10 +117,33 @@ class _ForumPageState extends State<ForumPage> {
               if (isCurrentUserThread)
                 ListTile(
                   leading: const Icon(Icons.delete, color: Colors.red),
-                  title: const Text('Delete', style: TextStyle(color: Colors.red),),
+                  title: const Text('Delete', style: TextStyle(color: Colors.red)),
                   onTap: () {
-                    _deleteThread(thread.id);
                     Navigator.pop(context);
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Confirm Deletion'),
+                          content: const Text('Are you sure you want to delete this thread?'),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: const Text('Cancel'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                                _deleteThread(thread.id);
+                              },
+                              child: const Text('Delete'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
                   },
                 ),
             ],

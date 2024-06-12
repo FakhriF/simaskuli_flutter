@@ -29,12 +29,12 @@ class _ThreadPageState extends State<ThreadPage> {
   final TextEditingController _editTitleController = TextEditingController();
   final TextEditingController _editContentController = TextEditingController();
 
-  late Thread _thread;
+  late Future<Thread> _threadFuture;
 
   @override
   void initState() {
     super.initState();
-    _thread = widget.thread;
+    _threadFuture = Future.value(widget.thread);
     loadCurrentUser();
   }
 
@@ -43,6 +43,18 @@ class _ThreadPageState extends State<ThreadPage> {
     setState(() {
       currentUser = prefs.getInt('userId') ?? 0;
     });
+  }
+
+  Future<Thread> _fetchThread() async {
+    final response = await http.get(
+      Uri.parse('https://simaskuli-api.vercel.app/api/api/forum/${widget.thread.id}'),
+    );
+    if (response.statusCode == 200) {
+      final jsonData = json.decode(response.body);
+      return Thread.fromJson(jsonData);
+    } else {
+      throw Exception('Failed to load thread');
+    }
   }
 
   Future<List<ThreadPost>> fetchReplies() async {
@@ -147,7 +159,7 @@ class _ThreadPageState extends State<ThreadPage> {
   Future<void> _updateThread(String title, String content) async {
     try {
       final response = await http.put(
-        Uri.parse('https://simaskuli-api.vercel.app/api/api/forum/${_thread.id}'),
+        Uri.parse('https://simaskuli-api.vercel.app/api/api/forum/${widget.thread.id}'),
         body: json.encode({
           'title': title,
           'content': content,
@@ -156,17 +168,10 @@ class _ThreadPageState extends State<ThreadPage> {
       );
       if (response.statusCode == 200) {
         debugPrint('Thread updated successfully');
-        // Create a new instance of Thread with the updated values
+        // Fetch the updated thread data from the API
+        final updatedThread = await _fetchThread();
         setState(() {
-          _thread = Thread(
-            id: _thread.id,
-            userId: _thread.userId,
-            title: title,
-            content: content,
-            createdAt: _thread.createdAt,
-            updatedAt: DateTime.now().toIso8601String(),
-            user: _thread.user,
-          );
+          _threadFuture = Future.value(updatedThread);
         });
       } else {
         debugPrint('Error updating thread: ${response.body}');
