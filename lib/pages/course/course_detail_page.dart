@@ -42,7 +42,8 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
 
   Future<void> _checkEnrollment() async {
     try {
-      bool isEnrolled = await _enrollmentController.isEnrolled(_currentUserId!, widget.course.id);
+      bool isEnrolled = await _enrollmentController.isEnrolled(
+          _currentUserId!, widget.course.id);
       setState(() {
         _isEnrolled = isEnrolled;
       });
@@ -90,6 +91,8 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
           ),
         ) ??
         false;
+  }
+
   Future<void> _unenroll() async {
     try {
       await _enrollmentController.destroy(_currentUserId!, widget.course.id);
@@ -150,16 +153,16 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
               const SizedBox(height: 8.0),
               if (_currentUserId != widget.course.userId)
                 _isEnrolled
-                  ? ElevatedButton.icon(
-                      onPressed: _unenroll,
-                      icon: Icon(Icons.cancel),
-                      label: Text('Unenroll'),
-                    )
-                  : ElevatedButton.icon(
-                      onPressed: _enroll,
-                      icon: Icon(Icons.add),
-                      label: Text('Enroll'),
-                    ),
+                    ? ElevatedButton.icon(
+                        onPressed: _unenroll,
+                        icon: Icon(Icons.cancel),
+                        label: Text('Unenroll'),
+                      )
+                    : ElevatedButton.icon(
+                        onPressed: _enroll,
+                        icon: Icon(Icons.add),
+                        label: Text('Enroll'),
+                      ),
               const SizedBox(height: 16.0),
               if (widget.course.imageUrl.isNotEmpty)
                 Image.network(
@@ -183,7 +186,8 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => QuizCreatePage(courseId: widget.course.id),
+                        builder: (context) =>
+                            QuizCreatePage(courseId: widget.course.id),
                       ),
                     );
                   },
@@ -210,7 +214,9 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                   ),
                 ),
               ),
-              const SizedBox(height: 16.0), // Add spacing between course details and the button
+              const SizedBox(
+                  height:
+                      16.0), // Add spacing between course details and the button
               ElevatedButton(
                 onPressed: () {
                   Navigator.push(
@@ -239,7 +245,8 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => CourseUpdatePage(course: widget.course),
+                      builder: (context) =>
+                          CourseUpdatePage(course: widget.course),
                     ),
                   );
                 },
