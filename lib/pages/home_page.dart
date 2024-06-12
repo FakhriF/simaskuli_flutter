@@ -64,7 +64,7 @@ class _HomePageState extends State<HomePage> {
     final user = await getUserData();
     final dashboardPage = DashboardPage(userData: user);
     final otherPages = [
-      const CourseSelectionPage(), //TODO: Ubah ini menjadi halaman kursus
+      const CoursePage(), //TODO: Ubah ini menjadi halaman kursus
       const ForumPage(), //TODO: Ubah ini menjadi halaman forum
       ProfilePage(userData: user),
     ];
