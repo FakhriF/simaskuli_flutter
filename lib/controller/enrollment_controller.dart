@@ -29,11 +29,11 @@ class EnrollmentController {
     }
   }
 
- // Enroll in a course
+  // Enroll in a course
   Future<void> store(int userId, int courseId) async {
     try {
       final response = await http.post(
-        Uri.parse(enrollmentApiUrl),
+        Uri.parse('$enrollmentApiUrl/create'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -43,7 +43,9 @@ class EnrollmentController {
       if (response.statusCode != 201) {
         print('Failed to enroll in course: ${response.statusCode}');
         print('Response body: ${response.body}');
-        throw Exception('Failed to enroll in course');
+        // Extract and print error details from response
+        final errorBody = json.decode(response.body);
+        throw Exception('Failed to enroll in course: ${errorBody['error']}');
       }
     } catch (e) {
       print('Exception caught: $e');
