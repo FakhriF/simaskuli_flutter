@@ -2,8 +2,6 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:simaskuli/models/course.dart';
 import 'package:simaskuli/models/module.dart';
-import 'package:simaskuli/models/user.dart';
-import 'package:simaskuli/controller/course_controller.dart';
 
 class ModuleController {
   String baseUrl = "https://simaskuli-api.vercel.app/api/api/course/";
@@ -46,6 +44,100 @@ class ModuleController {
     } catch (e) {
       print('Exception caught: $e');
       throw Exception('Failed to load modules');
+    }
+  }
+
+  Future<Module> createCourse(Module module) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$courseApiUrl/create'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, dynamic>{
+          'id': module.id,
+          'courseId': module.courseId,
+          'title': module.title,
+          'learningAchievements': module.learningAchievements,
+          'learningMaterials': module.learningMaterials,
+          'titleYoutube': module.titleYoutube,
+          'descriptionYoutube': module.descriptionYoutube,
+          'additionalMaterialTitle': module.additionalMaterialTitle,
+          'additionalMaterialDescription': module.additionalMaterialDescription,
+          'description': module.description,
+          'videoLink': module.videoLink,
+          'noteLink': module.noteLink,
+        }),
+      );
+
+      if (response.statusCode == 201) {
+        return Module.fromJson(json.decode(response.body));
+      } else {
+        print('Failed to create course: ${response.statusCode}');
+        print('Response body: ${response.body}');
+        throw Exception('Failed to create course');
+      }
+    } catch (e) {
+      print('Exception caught: $e');
+      throw Exception('Failed to create course');
+    }
+  }
+
+  // Update an existing course
+  Future<Module> updateModule(Module module) async {
+    try {
+      final response = await http.put(
+        Uri.parse('$courseApiUrl/${module}'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, dynamic>{
+          'id': module.id,
+          'courseId': module.courseId,
+          'title': module.title,
+          'learningAchievements': module.learningAchievements,
+          'learningMaterials': module.learningMaterials,
+          'titleYoutube': module.titleYoutube,
+          'descriptionYoutube': module.descriptionYoutube,
+          'additionalMaterialTitle': module.additionalMaterialTitle,
+          'additionalMaterialDescription': module.additionalMaterialDescription,
+          'description': module.description,
+          'videoLink': module.videoLink,
+          'noteLink': module.noteLink,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        return Module.fromJson(json.decode(response.body));
+      } else {
+        print('Failed to update course: ${response.statusCode}');
+        print('Response body: ${response.body}');
+        throw Exception('Failed to update course');
+      }
+    } catch (e) {
+      print('Exception caught: $e');
+      throw Exception('Failed to update course');
+    }
+  }
+
+  // Delete a course
+  Future<void> deleteModule(int id) async {
+    try {
+      final response = await http.delete(
+        Uri.parse('$courseApiUrl/$id'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+
+      if (response.statusCode != 200) {
+        print('Failed to delete course: ${response.statusCode}');
+        print('Response body: ${response.body}');
+        throw Exception('Failed to delete course');
+      }
+    } catch (e) {
+      print('Exception caught: $e');
+      throw Exception('Failed to delete course');
     }
   }
 }
