@@ -7,6 +7,7 @@ import 'package:simaskuli/models/user.dart';
 import 'package:simaskuli/pages/course/course_update_page.dart';
 import 'package:simaskuli/pages/course_building_map/course_building_map.dart';
 import 'package:simaskuli/pages/grades/student_gradebook.dart';
+import 'package:simaskuli/pages/course/quiz/quiz_create_page.dart';
 import 'package:simaskuli/pages/course/module/module_page.dart';
 
 class CourseDetailPage extends StatefulWidget {
@@ -70,6 +71,27 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
     } catch (e) {
       print('Failed to enroll: $e');
     }
+  }
+
+  Future<bool> _showConfirmationDialog() async {
+    return await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('Confirm Deletion'),
+            content: Text('Are you sure you want to delete this course?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: Text('Delete'),
+              ),
+            ],
+          ),
+        ) ??
+        false;
   }
 
   Future<void> _unenroll() async {
@@ -175,7 +197,45 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                 'Learning Outcomes: ${widget.course.learningOutcomes}',
                 style: TextStyle(fontSize: 16, color: Colors.grey[800]),
               ),
-              const SizedBox(height: 16.0), // Add spacing between buttons
+              const SizedBox(height: 16.0),
+              Center(
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            QuizCreatePage(courseId: widget.course.id),
+                      ),
+                    );
+                  },
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.blue),
+                    shape: MaterialStateProperty.all(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        side: BorderSide(color: Colors.blue),
+                      ),
+                    ),
+                  ),
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 1, horizontal: 10),
+                    child: Text(
+                      'Create Quiz',
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(
+                  height:
+                      16.0), // Add spacing between course details and the button
+//               const SizedBox(height: 16.0), // Add spacing between buttons
               ElevatedButton(
                 onPressed: () {
                   Navigator.push(
@@ -195,9 +255,11 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => ModulePage(
-                        courseId: widget.course.id,
-                      ),
+                      builder: (context) =>
+                          CourseUpdatePage(course: widget.course),
+//                       builder: (context) => ModulePage(
+//                         courseId: widget.course.id,
+//                       ),
                     ),
                   );
                 },
