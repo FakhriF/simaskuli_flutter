@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:simaskuli/controller/questions_controller.dart';
 import 'package:simaskuli/models/user.dart';
+import 'package:simaskuli/models/quiz.dart';
+// import 'package:simaskuli/controller/quiz_controller.dart';
+import 'package:simaskuli/pages/course/quiz/question_page.dart';
 
 import 'package:simaskuli/pages/forum/forum_page.dart';
 import 'package:simaskuli/pages/grades/student_gradebook.dart';
@@ -9,7 +13,7 @@ import 'package:simaskuli/pages/profile/profile_page.dart';
 import 'package:simaskuli/pages/course/course_page.dart';
 import 'package:simaskuli/pages/course/course_selection.dart';
 
-import 'package:simaskuli/pages/course/upcoming_quiz.dart';
+import 'package:simaskuli/pages/course/quiz/upcoming_quiz.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -77,13 +81,7 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  List<Widget> pages = [
-    // const DashboardPage(),
-    // const Center(
-    //     child: Text("Course Page")), //TODO: Change this to the Course Page
-    // const ForumPage(), //TODO: Change this to the Forum Page
-    // const ProfilePage(),
-  ];
+  List<Widget> pages = [];
 
   @override
   Widget build(BuildContext context) {
@@ -116,10 +114,28 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-class DashboardPage extends StatelessWidget {
+class DashboardPage extends StatefulWidget {
   const DashboardPage({required this.userData, super.key});
 
   final User userData;
+
+  @override
+  _DashboardPageState createState() => _DashboardPageState();
+}
+
+class _DashboardPageState extends State<DashboardPage> {
+  late Future<List<Quiz>> _quizzesFuture;
+  final QuestionsController _questionsController = QuestionsController();
+
+  @override
+  void initState() {
+    super.initState();
+    _quizzesFuture = _fetchQuizzes();
+  }
+
+  Future<List<Quiz>> _fetchQuizzes() async {
+    return await _questionsController.getQuiz();
+  }
 
   static List<String> greetings = [
     'Good Morning',
@@ -136,6 +152,18 @@ class DashboardPage extends StatelessWidget {
     } else {
       return greetings[2];
     }
+  }
+
+  void _addQuestion(int quizId) {
+    // Handle add question action
+  }
+
+  void _editQuiz(int quizId) {
+    // Handle edit quiz action
+  }
+
+  void _deleteQuiz(int quizId) {
+    // Handle delete quiz action
   }
 
   @override
@@ -158,7 +186,7 @@ class DashboardPage extends StatelessWidget {
                       children: [
                         Text("${getGreeting()},"),
                         Text(
-                          userData.name,
+                          widget.userData.name,
                           style: const TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 24),
                         ),
@@ -166,7 +194,7 @@ class DashboardPage extends StatelessWidget {
                     ),
                     CircleAvatar(
                       radius: 28,
-                      backgroundImage: NetworkImage(userData.profileUrl),
+                      backgroundImage: NetworkImage(widget.userData.profileUrl),
                     ),
                   ],
                 ),
@@ -179,7 +207,6 @@ class DashboardPage extends StatelessWidget {
                 ),
               ),
               CourseSelection(),
-              //TODO: Implement Courses in Dashboard Here!
               Container(
                 padding: const EdgeInsets.all(24),
                 child: const Text(
@@ -187,9 +214,35 @@ class DashboardPage extends StatelessWidget {
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
               ),
-              //TODO: Implement Upcoming Quiz in Dashboard Here!
-              const UpcomingQuiz()
-              //TODO: See the reference design here https://dribbble.com/shots/16244904-Education-Online-Course-Mobile-App
+              FutureBuilder<List<Quiz>>(
+                future: _quizzesFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Center(child: Text('No quizzes available.'));
+                  }
+
+                  final quizzes = snapshot.data!;
+                  return UpcomingQuiz(
+                    quizzes: quizzes,
+                    onQuizSelected: (quizId) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              QuizQuestionsPage(quizId: quizId),
+                        ),
+                      );
+                    },
+                    onAddQuestion: _addQuestion,
+                    onEditQuiz: _editQuiz,
+                    onDeleteQuiz: _deleteQuiz,
+                  );
+                },
+              ),
             ],
           ),
         ),
