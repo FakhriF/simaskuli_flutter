@@ -8,6 +8,7 @@ import 'package:simaskuli/pages/course/course_update_page.dart';
 import 'package:simaskuli/pages/course_building_map/course_building_map.dart';
 import 'package:simaskuli/pages/grades/student_gradebook.dart';
 import 'package:simaskuli/pages/course/quiz/quiz_create_page.dart';
+import 'package:simaskuli/pages/course/module/module_page.dart';
 
 class CourseDetailPage extends StatefulWidget {
   final Course course;
@@ -109,9 +110,26 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.course.title),
+        actions: [
+          if (_currentUserId != null)
+            IconButton(
+              icon: Icon(Icons.book),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => StudentGradeBook(
+                      courseId: widget.course.id,
+                      userId: _currentUserId!,
+                    ),
+                  ),
+                );
+              },
+            ),
+        ],
       ),
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -217,6 +235,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
               const SizedBox(
                   height:
                       16.0), // Add spacing between course details and the button
+//               const SizedBox(height: 16.0), // Add spacing between buttons
               ElevatedButton(
                 onPressed: () {
                   Navigator.push(
@@ -230,66 +249,40 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                 },
                 child: Text('View Course Building Map'),
               ),
-            ],
-          ),
-        ),
-      ),
-      floatingActionButton: Stack(
-        children: [
-          if (_currentUserId == widget.course.userId)
-            Positioned(
-              bottom: 16.0,
-              right: 16.0,
-              child: FloatingActionButton(
+              const SizedBox(height: 16.0),
+              ElevatedButton(
                 onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) =>
                           CourseUpdatePage(course: widget.course),
+//                       builder: (context) => ModulePage(
+//                         courseId: widget.course.id,
+//                       ),
                     ),
                   );
                 },
-                child: Icon(Icons.edit),
+                child: Text('View Course Modules'),
               ),
-            ),
-          Positioned(
-            bottom: 16.0,
-            right: _currentUserId == widget.course.userId ? 80.0 : 16.0,
-            child: FloatingActionButton(
+            ],
+          ),
+        ),
+      ),
+      floatingActionButton: _currentUserId == widget.course.userId
+          ? FloatingActionButton(
               onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => StudentGradeBook(
-                      courseId: widget.course.id,
-                      userId: _currentUserId!,
-                    ),
+                    builder: (context) =>
+                        CourseUpdatePage(course: widget.course),
                   ),
                 );
               },
-              child: Icon(Icons.book),
-            ),
-          ),
-          // Positioned(
-          //   bottom: 16.0,
-          //   left: 16.0,
-          //   child: FloatingActionButton(
-          //     onPressed: () {
-          //       Navigator.push(
-          //         context,
-          //         MaterialPageRoute(
-          //           builder: (context) => MapsPage(
-          //             courseId: widget.course.id,
-          //           ),
-          //         ),
-          //       );
-          //     },
-          //     child: Icon(Icons.map),
-          //   ),
-          // ),
-        ],
-      ),
+              child: Icon(Icons.edit),
+            )
+          : null,
     );
   }
 }
