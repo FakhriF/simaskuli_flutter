@@ -108,7 +108,7 @@ class _ForumPageState extends State<ForumPage> {
             children: [
               ListTile(
                 leading: const Icon(Icons.thumb_up, color: Colors.blue),
-                title: const Text('Like'),
+                title: const Text('Like', style: TextStyle(color: Colors.blue)),
                 onTap: () {
                   debugPrint("You liked this Thread!");
                   Navigator.pop(context);

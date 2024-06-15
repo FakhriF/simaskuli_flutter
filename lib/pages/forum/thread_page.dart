@@ -23,8 +23,8 @@ class _ThreadPageState extends State<ThreadPage> {
   List<ThreadPost> _replies = [];
   int? currentUser;
 
-  String? _editedContent; // Add this line
-  ThreadPost? _replyBeingEdited; // Add this line
+  String? _editedContent;
+  ThreadPost? _replyBeingEdited;
 
   final TextEditingController _editTitleController = TextEditingController();
   final TextEditingController _editContentController = TextEditingController();
@@ -111,7 +111,6 @@ class _ThreadPageState extends State<ThreadPage> {
     }
   }
 
-
   Future<void> editThread() async {
     _editTitleController.text = widget.thread.title;
     _editContentController.text = widget.thread.content;
@@ -136,7 +135,8 @@ class _ThreadPageState extends State<ThreadPage> {
                 maxLines: null,
                 decoration: InputDecoration(
                   labelText: 'Content',
-                ),),
+                ),
+              ),
             ],
           ),
           actions: [
@@ -149,8 +149,8 @@ class _ThreadPageState extends State<ThreadPage> {
             ElevatedButton(
               onPressed: () {
                 final String updatedTitle = _editTitleController.text.trim();
-                final String updatedContent = _editContentController.text
-                    .trim();
+                final String updatedContent =
+                _editContentController.text.trim();
                 if (updatedTitle.isNotEmpty && updatedContent.isNotEmpty) {
                   _updateThread(updatedTitle, updatedContent);
                   Navigator.pop(context);
@@ -191,11 +191,9 @@ class _ThreadPageState extends State<ThreadPage> {
     }
   }
 
-
   void editReply(ThreadPost reply) {
-    _replyBeingEdited = reply; // Store the reply being edited
-    _editedContent = reply
-        .content; // Initialize the edited content with the current reply content
+    _replyBeingEdited = reply;
+    _editedContent = reply.content;
 
     showDialog(
       context: context,
@@ -214,8 +212,8 @@ class _ThreadPageState extends State<ThreadPage> {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                _replyBeingEdited = null; // Reset the reply being edited
-                _editedContent = null; // Reset the edited content
+                _replyBeingEdited = null;
+                _editedContent = null;
               },
               child: Text('Cancel'),
             ),
@@ -232,8 +230,6 @@ class _ThreadPageState extends State<ThreadPage> {
     );
   }
 
-  // TODO: NOT CURRENTLY WORKING
-
   Future<void> saveEditedReply() async {
     if (_editedContent != null && _replyBeingEdited != null) {
       try {
@@ -248,8 +244,8 @@ class _ThreadPageState extends State<ThreadPage> {
         if (response.statusCode == 200) {
           debugPrint('Reply updated successfully');
           setState(() {
-            final updatedIndex = _replies.indexWhere((reply) =>
-            reply.id == _replyBeingEdited!.id);
+            final updatedIndex = _replies
+                .indexWhere((reply) => reply.id == _replyBeingEdited!.id);
             _replies[updatedIndex].content = _editedContent!;
           });
         } else {
@@ -263,8 +259,6 @@ class _ThreadPageState extends State<ThreadPage> {
       }
     }
   }
-
-  // DELETE
 
   Future<void> deleteThread() async {
     try {
@@ -331,7 +325,6 @@ class _ThreadPageState extends State<ThreadPage> {
     ).then((value) => value ?? false);
   }
 
-
   String formatTimeDifference(String dateString) {
     final DateTime postDate = DateTime.parse(dateString);
     final Duration difference = DateTime.now().difference(postDate);
@@ -350,18 +343,6 @@ class _ThreadPageState extends State<ThreadPage> {
       return '${(difference.inDays / 365).floor()} years ago';
     }
   }
-
-  //
-  // void editReply(ThreadPost reply) {
-  //   // Implement edit reply functionality
-  //   debugPrint('Edit reply: ${reply.id}');
-  // }
-
-  // void deleteReply(ThreadPost reply) {
-  //   // Implement delete reply functionality
-  //   debugPrint('Delete reply: ${reply.id}');
-  // }
-
 
   void showOptionsBottomSheet(BuildContext context, ThreadPost reply) {
     final isCurrentUser = reply.userId == currentUser;
@@ -382,7 +363,10 @@ class _ThreadPageState extends State<ThreadPage> {
                   },
                 ),
                 ListTile(
-                  leading: Icon(Icons.delete, color: Colors.red,),
+                  leading: Icon(
+                    Icons.delete,
+                    color: Colors.red,
+                  ),
                   title: Text('Delete', style: TextStyle(color: Colors.red)),
                   onTap: () {
                     Navigator.pop(context);
@@ -407,6 +391,66 @@ class _ThreadPageState extends State<ThreadPage> {
     );
   }
 
+  void _showThreadMenu(BuildContext context, Thread thread) {
+    final isCurrentUserThread = thread.user.id == currentUser;
+
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.thumb_up, color: Colors.blue),
+                title: const Text('Like', style: TextStyle(color: Colors.blue)),
+                onTap: () {
+                  debugPrint("You liked this Thread!");
+                  Navigator.pop(context);
+                },
+              ),
+              if (isCurrentUserThread)
+                ListTile(
+                  leading: const Icon(Icons.delete, color: Colors.red),
+                  title:
+                  const Text('Delete', style: TextStyle(color: Colors.red)),
+                  onTap: () {
+                    Navigator.pop(context);
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Confirm Deletion'),
+                          content: const Text(
+                              'Are you sure you want to delete this thread?'),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: const Text('Cancel'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                                deleteThread();
+                              },
+                              child: const Text('Delete'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
     final isCurrentUserThread = widget.thread.userId == currentUser;
@@ -415,27 +459,10 @@ class _ThreadPageState extends State<ThreadPage> {
       appBar: AppBar(
         title: Text(widget.thread.title),
         actions: [
-          if (isCurrentUserThread)
-            PopupMenuButton<String>(
-              onSelected: (String value) {
-                if (value == 'edit') {
-                  editThread();
-                } else if (value == 'delete') {
-                  deleteThread();
-                }
-              },
-              itemBuilder: (BuildContext context) =>
-              [
-                PopupMenuItem<String>(
-                  value: 'edit',
-                  child: Text('Edit'),
-                ),
-                PopupMenuItem<String>(
-                  value: 'delete',
-                  child: Text('Delete'),
-                ),
-              ],
-            ),
+          IconButton(
+            icon: const Icon(Icons.more_vert),
+            onPressed: () => _showThreadMenu(context, widget.thread),
+          ),
         ],
       ),
       body: FutureBuilder<Thread>(
@@ -445,7 +472,8 @@ class _ThreadPageState extends State<ThreadPage> {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(
-                child: Text('Failed to load thread: ${snapshot.error}'));
+              child: Text('Failed to load thread: ${snapshot.error}'),
+            );
           } else {
             final thread = snapshot.data!;
             return Column(
@@ -471,18 +499,22 @@ class _ThreadPageState extends State<ThreadPage> {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
                             return const Center(
-                                child: CircularProgressIndicator());
+                              child: CircularProgressIndicator(),
+                            );
                           } else if (snapshot.hasError) {
-                            return Center(child: Text(
-                                'Failed to load replies: ${snapshot.error}'));
+                            return Center(
+                              child: Text(
+                                'Failed to load replies: ${snapshot.error}',
+                              ),
+                            );
                           } else {
                             final replies = snapshot.data!;
                             return ListView.separated(
                               shrinkWrap: true,
                               physics: const NeverScrollableScrollPhysics(),
                               itemCount: replies.length,
-                              separatorBuilder: (context,
-                                  index) => const Divider(),
+                              separatorBuilder: (context, index) =>
+                              const Divider(),
                               itemBuilder: (context, index) {
                                 final reply = replies[index];
                                 final isCurrentUser = reply.userId ==
@@ -490,7 +522,8 @@ class _ThreadPageState extends State<ThreadPage> {
                                 return ListTile(
                                   leading: CircleAvatar(
                                     backgroundImage: NetworkImage(
-                                        reply.user.profileUrl),
+                                      reply.user.profileUrl,
+                                    ),
                                   ),
                                   title: Row(
                                     children: [
@@ -504,27 +537,11 @@ class _ThreadPageState extends State<ThreadPage> {
                                         ),
                                       ),
                                       if (isCurrentUser)
-                                        PopupMenuButton<String>(
-                                          icon: const Icon(
-                                              Icons.more_vert, size: 16),
-                                          onSelected: (String value) {
-                                            if (value == 'edit') {
-                                              editReply(reply);
-                                            } else if (value == 'delete') {
-                                              deleteReply(reply);
-                                            }
-                                          },
-                                          itemBuilder: (BuildContext context) =>
-                                          [
-                                            const PopupMenuItem<String>(
-                                              value: 'edit',
-                                              child: Text('Edit'),
-                                            ),
-                                            const PopupMenuItem<String>(
-                                              value: 'delete',
-                                              child: Text('Delete'),
-                                            ),
-                                          ],
+                                        IconButton(
+                                          icon: const Icon(Icons.more_vert),
+                                          onPressed: () =>
+                                              showOptionsBottomSheet(
+                                                  context, reply),
                                         ),
                                     ],
                                   ),
@@ -541,7 +558,9 @@ class _ThreadPageState extends State<ThreadPage> {
                 Container(
                   padding: const EdgeInsets.all(8.0),
                   decoration: BoxDecoration(
-                    border: Border(top: BorderSide(color: Colors.grey[300]!)),
+                    border: Border(
+                      top: BorderSide(color: Colors.grey[300]!),
+                    ),
                   ),
                   child: Row(
                     children: [
@@ -551,8 +570,8 @@ class _ThreadPageState extends State<ThreadPage> {
                           decoration: const InputDecoration(
                             hintText: 'Post a new reply...',
                             border: InputBorder.none,
-                            contentPadding: EdgeInsets.symmetric(
-                                horizontal: 16.0),
+                            contentPadding:
+                            EdgeInsets.symmetric(horizontal: 16.0),
                           ),
                           onTap: () {
                             setState(() {
