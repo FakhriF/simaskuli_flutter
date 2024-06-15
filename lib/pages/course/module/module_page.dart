@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:simaskuli/controller/module_controller.dart';
 import 'package:simaskuli/models/module.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:simaskuli/pages/course/module/create_module.dart';
+import 'package:simaskuli/pages/course/module/update_module.dart';
+import 'package:simaskuli/pages/course/module/delete_module.dart';
 
 class ModulePage extends StatefulWidget {
   final int courseId;
@@ -24,6 +27,48 @@ class _ModulePageState extends State<ModulePage> {
 
   Future<List<Module>> _fetchData() async {
     return await ModuleController().getModule(widget.courseId.toString());
+  }
+
+  Future<void> _refreshModules() async {
+    setState(() {
+      data = _fetchData();
+    });
+  }
+
+  void _navigateToCreateModule() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CreateModulePage(courseId: widget.courseId),
+      ),
+    );
+    _refreshModules();
+  }
+
+  void _navigateToUpdateModule(Module module) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            UpdateModulePage(courseId: widget.courseId, module: module),
+      ),
+    );
+    _refreshModules();
+  }
+
+  Future<void> _deleteModule(int moduleId) async {
+    try {
+      await ModuleController()
+          .deleteModule(widget.courseId, moduleId); // Pass as integers
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Module deleted successfully')),
+      );
+      _refreshModules();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to delete module: $e')),
+      );
+    }
   }
 
   @override
@@ -65,13 +110,35 @@ class _ModulePageState extends State<ModulePage> {
                             width: double.infinity,
                             color: Color.fromARGB(255, 74, 202, 253),
                             padding: const EdgeInsets.all(12.0),
-                            child: Text(
-                              module.title,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    module.title,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                Row(
+                                  children: [
+                                    IconButton(
+                                      icon:
+                                          Icon(Icons.edit, color: Colors.white),
+                                      onPressed: () =>
+                                          _navigateToUpdateModule(module),
+                                    ),
+                                    IconButton(
+                                      icon: Icon(Icons.delete,
+                                          color: Colors.white),
+                                      onPressed: () => _deleteModule(module.id),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
                           ),
                         ),
@@ -110,6 +177,11 @@ class _ModulePageState extends State<ModulePage> {
             return Center(child: Text('No data available'));
           }
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _navigateToCreateModule,
+        child: Icon(Icons.add),
+        backgroundColor: Colors.blue,
       ),
     );
   }
